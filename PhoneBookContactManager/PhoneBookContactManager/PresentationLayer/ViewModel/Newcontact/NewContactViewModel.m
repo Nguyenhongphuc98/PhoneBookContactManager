@@ -10,7 +10,7 @@
 
 @implementation NewContactViewModel
 
--(void) addNewContact:(ContactModel*) model :(NSData*) imageData{
+-(void) addNewContact:(ContactModel *_Nonnull) model :(NSData*) imageData{
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         BContactStore *contactStore = [BContactStore new];
         BContactModel *newContact = [self convertContactModelToBContactModel:model];
@@ -34,14 +34,15 @@
     });
 }
 
-- (void)updateContact:(ContactModel *)model :(NSData *)imageData{
+- (void)updateContact:(ContactModel *_Nonnull)model :(NSData *)imageData{
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         BContactStore *contactStore = [BContactStore new];
         BContactModel *contactNeedUpdate = [self convertContactModelToBContactModel:model];
         
         //save to store cache
         UIImage *image = [[UIImage alloc] initWithData:imageData];
-        [[CacheStore sharedInstance] setImage:image for:contactNeedUpdate.identifier];
+        if(image)
+            [[CacheStore sharedInstance] setImage:image for:contactNeedUpdate.identifier];
         
         [contactStore updateContact:contactNeedUpdate :imageData andHandle:^(NSError * _Nullable error, NSString *identifier) {
             if(error)

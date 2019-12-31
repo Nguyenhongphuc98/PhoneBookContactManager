@@ -13,7 +13,7 @@
 @property NSMutableArray *sessitonArray;
 @property NSMutableArray *contactSearchArray;
 @property BContactStore *contactStore;
-
+@property dispatch_queue_t serialSearchQueue;
 @property BOOL isSearching;
 
 @end
@@ -28,6 +28,7 @@
         self.sessitonArray = [[NSMutableArray alloc] init];
         self.contactSearchArray = [[NSMutableArray alloc] init];
         self.contactStore = [[BContactStore alloc] init];
+        self.serialSearchQueue = dispatch_queue_create("search queue", DISPATCH_QUEUE_SERIAL);
         self.isSearching = NO;
     }
     return self;
@@ -38,23 +39,29 @@
         if(granted == NO){
             NSLog(@"dont have permisson");
             if([[self delegate] respondsToSelector:@selector(showPermisionDenied)]){
-                [self.delegate showPermisionDenied];
+                    [self.delegate showPermisionDenied];
             }
+            else
+                NSLog(@"unresponds to selector");
         }
         else
             [self loadContactFromBussinessLayer];
     }];
-    
-    
 }
 
 - (void)loadContactFromBussinessLayer{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
         [self.contactStore loadContactWithCompleteHandle:^(NSMutableArray * _Nullable businesscontactArray, NSError * _Nullable error) {
             if(error){
-                [self.delegate showFailToLoadContact];
+                if([self.delegate respondsToSelector:@selector(showFailToLoadContact)])
+                    [self.delegate showFailToLoadContact];
             }
             else{
+                //clear exists contact
+                [self.contactDictionary removeAllObjects];
+                [self.sessitonArray removeAllObjects];
+                
                 //add contact to dictionary
                 for (BContactModel *contact in businesscontactArray) {
                     ContactModel *model = [[ContactModel alloc] initWithBusinessContact:contact];
@@ -83,7 +90,6 @@
                     dispatch_sync(dispatch_get_main_queue(), ^{
                         [self.delegate loadDataComplete];
                     });
-                
                 else
                     NSLog(@"unresponds to selector");
             }
@@ -92,12 +98,10 @@
 }
 
 -(void)searchWithString:(NSString *)keyToSearch{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(self.serialSearchQueue, ^{
         if(keyToSearch.length == 0){
             self.isSearching = NO;
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [self.delegate loadDataComplete];
-            });
+            [self loadContactFromBussinessLayer];
         }
         else{
             self.isSearching = YES;
@@ -114,12 +118,11 @@
                         }
                     }
                 }
-    
-               
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate loadDataComplete];
+                if([self.delegate respondsToSelector:@selector(loadDataComplete)])
+                    [self.delegate loadDataComplete];
             });
         }
     });
@@ -127,16 +130,16 @@
 
 //get method
 - (NSString *)getTitleForHeaderInSection:(NSInteger)session{
-    if(session>= [self.sessitonArray count])
+    
+    if(self.isSearching)
+        return @"Search result";
+
+    if(session >= [self.sessitonArray count])
     {
         NSLog(@"can't get session out of bound");
         return @"";
     }
-    
-    if(self.isSearching)
-        return @"Search result";
-    else
-        return [self.sessitonArray objectAtIndex:session];
+    return [self.sessitonArray objectAtIndex:session];
 }
 
 - (NSInteger)getNumberOfSection{
@@ -147,16 +150,16 @@
 }
 
 - (NSInteger)getNumberOfRowInSection:(NSInteger)section{
-    if(section>= [self.sessitonArray count])
+    
+    if(self.isSearching)
+        return [self.contactSearchArray count];
+    
+    if(section >= [self.sessitonArray count])
     {
         NSLog(@"can't get number rows of this session: %ld", section);
         return 0;
     }
-    
-    if(self.isSearching)
-        return [self.contactSearchArray count];
-    else
-        return [[self.contactDictionary objectForKey:[self.sessitonArray objectAtIndex:section]] count];
+    return [[self.contactDictionary objectForKey:[self.sessitonArray objectAtIndex:section]] count];
 }
 
 - (ContactModel *)getModel:(NSInteger)section :(NSInteger)row{
@@ -175,11 +178,11 @@
 
 - (void)removeCellAt:(NSInteger)section andRow:(NSInteger)row{
     
+    if([self isInValidSection:section andRow:row])
+        return;
+    
     if(self.isSearching == NO)
     {
-        if([self isInValidSection:section andRow:row])
-            return;
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSString * sectionKey = [self.sessitonArray objectAtIndex:section];
             ContactModel *contactNeedDelete = [[self.contactDictionary objectForKey:sectionKey] objectAtIndex:row];
@@ -203,7 +206,6 @@
                         }
                     });
                 }
-                
             }];
         });
     }
@@ -214,6 +216,8 @@
 }
 
 -(void) removeCellInSearchMode:(NSInteger)section andRow:(NSInteger)row{
+    if([self isInValidSection:section andRow:row])
+        return;
     //delete in device
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         ContactModel *contactNeedDelete = [self.contactSearchArray objectAtIndex:row];
@@ -260,7 +264,6 @@
                     }
                 }
                 
-                
                 //update info on UI
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)])
@@ -276,6 +279,8 @@
 }
 
 - (void)removeSection:(NSInteger)section{
+    if(section >= [self.sessitonArray count])
+        return;
     
     if(self.isSearching == NO)
     {
@@ -312,7 +317,6 @@
                     
                 }];
             });
-            
         }
         else
             NSLog(@"can't remove session when contain multi cells");
@@ -321,7 +325,6 @@
     {
         //delete in search mode : just have only 1 section and 1 row
         [self removeCellInSearchMode:0 andRow:0];
-        NSLog(@"deleting section...");
     }
 }
 
@@ -375,9 +378,24 @@
             if([self isInValidSection:editContactModel.indexPath.section andRow:editContactModel.indexPath.row])
                 return;
             
-            NSString *sessionName = [self.sessitonArray objectAtIndex:editContactModel.indexPath.section];
+            NSString *oldSectionName = [self.sessitonArray objectAtIndex:editContactModel.indexPath.section];
+            NSString *newSectionName;
+            if([[model avatarName] length] == 1)
+                newSectionName = [model avatarName];
+            else
+                newSectionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
             
-            [[self.contactDictionary objectForKey:sessionName] replaceObjectAtIndex:editContactModel.indexPath.row withObject: model];
+            if([newSectionName isEqualToString:oldSectionName])
+                [[self.contactDictionary objectForKey:oldSectionName] replaceObjectAtIndex:editContactModel.indexPath.row withObject: model];
+            else
+            {
+                [self moveContactToOtherSection:model index:editContactModel.indexPath oldSection:oldSectionName newSection:newSectionName];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if([self.delegate respondsToSelector:@selector(loadDataComplete)])
+                    [self.delegate loadDataComplete];
+                });
+            }
         }
        else
        {
@@ -403,7 +421,7 @@
                sectionName = [model avatarName];
            else
                sectionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
-           
+
            for (ContactModel *mDic in [self.contactDictionary objectForKey:sectionName]) {
                if([mDic.identifier isEqualToString:model.identifier])
                {
@@ -416,6 +434,7 @@
                    break;
                }
            }
+           
        }
         
         if([self.delegate respondsToSelector:@selector(loadDataComplete)])
@@ -426,6 +445,26 @@
         else
             NSLog(@"unresponds to selector");
     });
+}
+
+-(void) moveContactToOtherSection:(ContactModel *_Nonnull)model index:(NSIndexPath *_Nonnull)indexPath oldSection:(NSString *_Nonnull) oldSectionName newSection:(NSString*_Nonnull) newSectionName{
+    //contact will be move to other section
+    [[self.contactDictionary objectForKey:oldSectionName] removeObjectAtIndex:indexPath.row];
+    if([[self.contactDictionary objectForKey:oldSectionName] count] == 0)
+    {
+        [self.contactDictionary removeObjectForKey:oldSectionName];
+        [self.sessitonArray removeObjectAtIndex:indexPath.section];
+    }
+    
+    if([self.contactDictionary objectForKey:newSectionName] == nil){
+        NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
+        [contactSessionArray addObject:model];
+        [self.contactDictionary setObject:contactSessionArray forKey:newSectionName];
+        
+        [self.sessitonArray addObject:newSectionName];
+    }
+    else
+        [[self.contactDictionary objectForKey:newSectionName] addObject:model];
 }
 
 -(BOOL) isInValidSection:(NSInteger)section andRow:(NSInteger)row{

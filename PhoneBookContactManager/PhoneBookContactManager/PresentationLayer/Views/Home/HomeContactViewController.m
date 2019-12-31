@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *addNewContactButton;
 
 @property (strong,nonatomic) ContactHomeViewModel* viewModel;
+@property BOOL isContactLoaded;
 
 @end
 
@@ -24,20 +25,19 @@
     [super viewDidLoad];
 
     [self setUp];
-    [self requestAccessContactInDevice];
-    
     //add observer for newcontact viewcontroller
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processNewContactViewControllerdismis:) name:@"processContactNotify" object:nil];
 }
 
 -(void) viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+    if(!self.isContactLoaded)
+        [self requestAccessContactInDevice];
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"processContactNotify" object:nil];
-    //[super dealloc];
 }
 
 -(void) setUp{
@@ -45,6 +45,7 @@
     [_contactTableView registerNib:nib forCellReuseIdentifier:@"ContactTableViewCell"];
     
     [self.infoLable setHidden:YES];
+    self.isContactLoaded = NO;
     
     self.viewModel = [[ContactHomeViewModel alloc] init];
     self.viewModel.delegate = self;
@@ -62,7 +63,7 @@
         [self.viewModel removeCellAt:indexPath.section andRow:indexPath.row];
 }
 
--(void) showAlertActionOkWith:(NSString*) title message:(NSString*) msg{
+-(void) showAlertActionOkWith:(NSString *_Nonnull) title message:(NSString *_Nonnull) msg{
     UIAlertController *alertDenied = [UIAlertController alertControllerWithTitle:title
                                                                          message:msg
                                                                   preferredStyle:UIAlertControllerStyleAlert];
@@ -116,8 +117,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     ContactTableViewCell *cell = (ContactTableViewCell*)[tableView dequeueReusableCellWithIdentifier:@"ContactTableViewCell" forIndexPath:indexPath];
-    //fill data
-    
     [cell fillData:[self.viewModel getModel:indexPath.section :indexPath.row]];
     
     return cell;
@@ -182,6 +181,7 @@
 //observer contact home view model
 -(void) loadDataComplete{
     [self.contactTableView reloadData];
+    self.isContactLoaded = YES;
 }
 
 - (void)showPermisionDenied{

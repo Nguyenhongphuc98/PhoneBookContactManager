@@ -44,7 +44,9 @@
         {
             CNContactStore *contactStore = [[CNContactStore alloc] init];
             [contactStore requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError * _Nullable error) {
-                callback(granted,error);
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                     callback(granted,error);
+                });
             }];
             break;
         }
@@ -90,8 +92,6 @@
         
         self.isLoadingContact=YES;
         
-        NSLog(@"loading data....");
-        
         //loading on other thead to don't have wait to add block to completeHandle array
         //just read one time -> don't worry about concurrent queue
         dispatch_async(self.concurentReadWriteQueue, ^{
@@ -99,9 +99,9 @@
             {
                 CNContactStore *contactStore = [[CNContactStore alloc] init];
                 NSArray *keysToFetch = @[CNContactIdentifierKey,
-                                         CNContactFamilyNameKey, //ten
-                                         CNContactMiddleNameKey, //ten dem
-                                         CNContactGivenNameKey,  //ho
+                                         CNContactFamilyNameKey,
+                                         CNContactMiddleNameKey,
+                                         CNContactGivenNameKey,
                                          CNContactPhoneNumbersKey,
                                          CNContactImageDataKey];
                 
@@ -140,7 +140,6 @@
         
         for (loadContactCompleteHandle callback in self.loadContactCompleteHandleArray) {
             if(callback!=nil){
-                //NSLog(@"callback!= nill");
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                     callback(contactForTransferArray,error);
                 });
@@ -157,7 +156,7 @@
 
 - (void)loadImageForIdentifier:(NSString *)identifier withHandle:(loadImageCompleteHandle)callback{
     
-    if(callback == nil)
+    if(callback == nil || identifier == nil)
         return;
     
     // allow multi read
@@ -200,7 +199,6 @@
                      callback(deleteError,nil);
             });
         }
-        
     });
 }
 
@@ -220,7 +218,7 @@
         newContact.familyName = contact.familyName;
         
         if(image)
-        newContact.imageData = image;
+            newContact.imageData = image;
         
         NSMutableArray *labelArray = [self genratePhoneNumberArray:contact];
         if(labelArray != nil)
@@ -248,7 +246,7 @@
     if(contact == nil || callback == nil)
         return;
     
-    dispatch_async(self.concurentReadWriteQueue, ^{
+    dispatch_barrier_sync(self.concurentReadWriteQueue, ^{
         CNContactStore *contactStore = [CNContactStore new];
         
         NSError *__block updateError;

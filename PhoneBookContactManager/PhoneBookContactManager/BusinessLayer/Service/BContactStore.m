@@ -11,12 +11,18 @@
 @implementation BContactStore
 
 - (void)checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nonnull))callBack{
+    if(callBack == nil)
+        return;
+    
     [[DContactStore sharedInstance] checkAuthorizeStatus:^(BOOL granted, NSError * _Nonnull error) {
         callBack(granted,error);
     }];
 }
 
 - (void)loadContactWithCompleteHandle:(loadBusinessContactCompleteHandle)callback{
+    if(callback == nil)
+        return;
+    
     [[DContactStore sharedInstance] loadContactWithCompleteHandle:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
         if(error){
             callback(nil,error);
@@ -33,7 +39,7 @@
 }
 
 -(void) loadImageForIdentifier:(NSString *)identifier withHandle: (loadImageCompleteHandle) callback{
-    if(callback ==nil)
+    if(callback ==nil || identifier == nil)
         return;
     
     [[DContactStore sharedInstance] loadImageForIdentifier:identifier withHandle:^(NSData * _Nullable image, NSError * _Nullable error) {
@@ -51,6 +57,9 @@
 }
 
 - (void)addNewContact:(BContactModel *)contact :(NSData *)image andHandle:(writeContactCompleteHandle)callback{
+    if(contact == nil || callback == nil)
+        return;
+    
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // convert to DcontactDTO
         DContactDTO *newContact = [self convertBcontactToDcontactDTO:contact];
@@ -62,6 +71,9 @@
 }
 
 - (void)updateContact:(BContactModel *)contact :(NSData *)image andHandle:(writeContactCompleteHandle)callback{
+    if(contact == nil || callback == nil)
+        return;
+    
     DContactDTO *updateContact = [self convertBcontactToDcontactDTO:contact];
     [[DContactStore sharedInstance] updateContact:updateContact :image andHandle:^(NSError * _Nullable error, NSString * _Nullable identifier) {
         callback(error,identifier);

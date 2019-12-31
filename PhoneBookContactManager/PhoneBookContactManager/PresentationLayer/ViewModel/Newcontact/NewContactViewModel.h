@@ -27,9 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak,nonatomic) id<NewContactObserver> delegate;
 
--(void) addNewContact:(ContactModel*) model :(NSData*) imageData;
+-(void) addNewContact:(ContactModel *_Nonnull) model :(NSData*) imageData;
 
--(void) updateContact:(ContactModel*) model :(NSData*) imageData;
+-(void) updateContact:(ContactModel *_Nonnull) model :(NSData*) imageData;
 @end
 
 NS_ASSUME_NONNULL_END

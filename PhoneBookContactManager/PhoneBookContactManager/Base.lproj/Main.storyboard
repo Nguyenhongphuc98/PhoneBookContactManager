@@ -27,7 +27,7 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="5Sr-Eo-TcF"/>
                                 </connections>
                             </searchBar>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="can't load contact from device, open setings to grand permission" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0et-R6-AK3">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Go to Settings and Grant the permission to use this feature." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0et-R6-AK3">
                                 <rect key="frame" x="0.0" y="284" width="375" height="99"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -54,11 +54,11 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="0et-R6-AK3" firstAttribute="leading" secondItem="FAR-mp-bP0" secondAttribute="leading" constant="30" id="48l-24-5h8"/>
+                            <constraint firstItem="0et-R6-AK3" firstAttribute="leading" secondItem="FAR-mp-bP0" secondAttribute="leading" id="48l-24-5h8"/>
                             <constraint firstItem="2PZ-Ya-Ck5" firstAttribute="bottom" secondItem="FAR-mp-bP0" secondAttribute="top" id="G4f-oO-O2r"/>
                             <constraint firstItem="JOH-bo-12l" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="KY6-CS-Lmu"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="FAR-mp-bP0" secondAttribute="bottom" id="O8c-jG-bL5"/>
-                            <constraint firstItem="0et-R6-AK3" firstAttribute="trailing" secondItem="FAR-mp-bP0" secondAttribute="trailing" constant="-30" id="RWv-bq-2uO"/>
+                            <constraint firstItem="0et-R6-AK3" firstAttribute="trailing" secondItem="FAR-mp-bP0" secondAttribute="trailing" id="RWv-bq-2uO"/>
                             <constraint firstItem="0et-R6-AK3" firstAttribute="top" secondItem="FAR-mp-bP0" secondAttribute="top" id="SCW-h7-SLp"/>
                             <constraint firstItem="2PZ-Ya-Ck5" firstAttribute="top" secondItem="JOH-bo-12l" secondAttribute="bottom" id="TnJ-RV-RvR"/>
                             <constraint firstItem="2PZ-Ya-Ck5" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="XDJ-tr-g07"/>
