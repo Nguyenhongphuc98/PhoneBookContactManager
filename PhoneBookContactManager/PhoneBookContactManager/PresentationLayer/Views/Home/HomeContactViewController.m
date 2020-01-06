@@ -16,6 +16,7 @@
 
 @property (strong,nonatomic) ContactHomeViewModel* viewModel;
 @property BOOL isContactLoaded;
+@property BOOL isrefused;
 
 @end
 
@@ -46,6 +47,7 @@
     
     [self.infoLable setHidden:YES];
     self.isContactLoaded = NO;
+    self.isrefused = NO;
     
     self.viewModel = [[ContactHomeViewModel alloc] init];
     self.viewModel.delegate = self;
@@ -118,7 +120,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     ContactTableViewCell *cell = (ContactTableViewCell*)[tableView dequeueReusableCellWithIdentifier:@"ContactTableViewCell" forIndexPath:indexPath];
     [cell fillData:[self.viewModel getModel:indexPath.section :indexPath.row]];
-    
+
     return cell;
 }
 
@@ -185,9 +187,16 @@
 }
 
 - (void)showPermisionDenied{
-    [self showAlertActionOkWith:@"Permision denied" message:@"Open setings to allow read contacts from device"];
-    [self.infoLable setHidden:NO];
-    [self.contactTableView setHidden:YES];
+    if(self.isrefused){
+        //[self showAlertActionOkWith:@"Permision denied" message:@"Open setings to allow read contacts from device"];
+        [self.infoLable setHidden:NO];
+        [self.contactTableView setHidden:YES];
+    }
+    else {
+        DeniedViewController *viewDenied = [self.storyboard instantiateViewControllerWithIdentifier:@"DeniedViewController"];
+        [self.navigationController presentViewController:viewDenied animated:YES completion:nil];
+        self.isrefused = YES;
+    }
 }
 
 - (void)showFailToLoadContact{

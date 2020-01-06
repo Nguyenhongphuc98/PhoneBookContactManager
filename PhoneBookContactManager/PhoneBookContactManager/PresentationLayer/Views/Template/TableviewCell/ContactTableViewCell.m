@@ -22,7 +22,8 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    _contactAvatar.layer.cornerRadius = 25;
+    self.contactAvatar.layer.cornerRadius = 25;
+    self.separatorInset = UIEdgeInsetsMake(0, 80, 0, 0);
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -41,7 +42,7 @@
     {
         //try to get from device
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [[[BContactStore alloc] init] loadImageForIdentifier:model.identifier withHandle:^(NSData * _Nullable image, NSError * _Nullable error) {
+            [[[BContactStore alloc] init] loadImageForIdentifier:model.identifier withCallback:^(NSData * _Nullable image, NSError * _Nullable error) {
                 if(!error && image)
                 {
                     UIImage * imageFromDevice =[[UIImage alloc] initWithData:image];
@@ -76,7 +77,12 @@
     
     UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
     nameLabel.text = text;
-    nameLabel.backgroundColor = UIColor.greenColor;
+    int red = [text characterAtIndex:0];
+    int green = ([text length] == 2)? [text characterAtIndex:1] :red;
+    float r = ((red*2 + green *3)%255) /255.0;
+    float g = ((red*5 + green /2)%255) /255.0;
+    UIColor *background = [UIColor colorWithRed:r green:g blue:0.5 alpha:1.0];
+    nameLabel.backgroundColor = background;
     nameLabel.textAlignment=NSTextAlignmentCenter;
     
     UIGraphicsBeginImageContextWithOptions(nameLabel.bounds.size, nameLabel.opaque, 1.0);

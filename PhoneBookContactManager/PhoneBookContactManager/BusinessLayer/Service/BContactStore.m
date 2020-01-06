@@ -10,7 +10,7 @@
 
 @implementation BContactStore
 
-- (void)checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nonnull))callBack{
+- (void)checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nonnull)) callBack {
     if(callBack == nil)
         return;
     
@@ -19,15 +19,14 @@
     }];
 }
 
-- (void)loadContactWithCompleteHandle:(loadBusinessContactCompleteHandle)callback{
+- (void)loadContactWithCallback:(loadBusinessContactCallback) callback {
     if(callback == nil)
         return;
-    
-    [[DContactStore sharedInstance] loadContactWithCompleteHandle:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
+    dispatch_queue_t testQueue = dispatch_queue_create("from busseness", DISPATCH_QUEUE_CONCURRENT);
+    [[DContactStore sharedInstance] loadContactWithCallback:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
         if(error){
             callback(nil,error);
-        }
-        else{
+        }else{
             NSMutableArray *BContactModelArray = [[NSMutableArray alloc] init];
             for (DContactDTO * contactDTO in contactDTOArray) {
                 [BContactModelArray addObject:[[BContactModel alloc] initWithDContactDTO: contactDTO]];
@@ -35,28 +34,75 @@
             
             callback(BContactModelArray,nil);
         }
-    }];
+    } onQueue:testQueue];
 }
 
--(void) loadImageForIdentifier:(NSString *)identifier withHandle: (loadImageCompleteHandle) callback{
+- (void)loadContactWithCallback2:(dictionaryContactCallback) callback {
+    if(callback == nil)
+        return;
+    
+    dispatch_queue_t businessQueue = dispatch_queue_create("from busseness", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(businessQueue, ^{
+        [[DContactStore sharedInstance] loadContactWithCallback:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
+            if(error){
+                callback(nil,nil,error);
+            }else {
+                NSMutableArray *BContactModelArray = [[NSMutableArray alloc] init];
+                for (DContactDTO * contactDTO in contactDTOArray) {
+                    [BContactModelArray addObject:[[BContactModel alloc] initWithDContactDTO: contactDTO]];
+                }
+                
+                //add contact to dictionary
+                NSMutableDictionary *contactDictionary = [NSMutableDictionary new];
+                NSMutableArray *sectitonArray = [NSMutableArray new];
+                
+                for (BContactModel *contact in BContactModelArray) {
+                    ContactModel *model = [[ContactModel alloc] initWithBusinessContact:contact];
+                    NSString *sessionName;
+                    if([[model avatarName] length] == 1)
+                        sessionName = [model avatarName];
+                    else
+                        sessionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
+                    
+                    //add session
+                    if([contactDictionary objectForKey:sessionName] == nil){
+                        //add new session if not exists
+                        NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
+                        [contactSessionArray addObject:model];
+                        [contactDictionary setObject:contactSessionArray forKey:sessionName];
+                    }else
+                        [[contactDictionary objectForKey:sessionName] addObject:model];
+                }
+                
+                //sort A->Z
+                NSMutableArray *tempArray = [[NSMutableArray alloc] initWithArray:[contactDictionary allKeys]];
+                sectitonArray = [[NSMutableArray alloc] initWithArray:[tempArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
+                
+                callback(contactDictionary,sectitonArray,nil);
+            }
+        } onQueue:businessQueue];
+    });
+}
+
+-(void) loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback _Nonnull) callback {
     if(callback ==nil || identifier == nil)
         return;
     
-    [[DContactStore sharedInstance] loadImageForIdentifier:identifier withHandle:^(NSData * _Nullable image, NSError * _Nullable error) {
+    [[DContactStore sharedInstance] loadImageForIdentifier:identifier withCallback:^(NSData * _Nullable image, NSError * _Nullable error) {
         callback(image,error);
     }];
 }
 
-- (void)deleteContactWithIdentifier:(NSString *)identifier andHandle:(writeContactCompleteHandle)callback{
+- (void)deleteContactForIdentifier:(NSString *)identifier withCallback:(nonnull writeContactCallback) callback {
     if(callback ==nil)
         return;
 
-    [[DContactStore sharedInstance] deleteContactWithIdentifier:identifier andHandle:^(NSError * _Nullable error, NSString* identifier) {
+    [[DContactStore sharedInstance] deleteContactForIdentifier:identifier withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
         callback(error,identifier);
     }];
 }
 
-- (void)addNewContact:(BContactModel *)contact :(NSData *)image andHandle:(writeContactCompleteHandle)callback{
+- (void)addNewContact:(BContactModel *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
     if(contact == nil || callback == nil)
         return;
     
@@ -64,19 +110,19 @@
         // convert to DcontactDTO
         DContactDTO *newContact = [self convertBcontactToDcontactDTO:contact];
         
-        [[DContactStore sharedInstance] addNewContact:newContact :image andHandle:^(NSError * _Nullable error, NSString* identifier) {
+        [[DContactStore sharedInstance] addNewContact:newContact :image withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
             callback(error,identifier);
         }];
     });
 }
 
-- (void)updateContact:(BContactModel *)contact :(NSData *)image andHandle:(writeContactCompleteHandle)callback{
+- (void)updateContact:(BContactModel *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
     if(contact == nil || callback == nil)
         return;
     
     DContactDTO *updateContact = [self convertBcontactToDcontactDTO:contact];
-    [[DContactStore sharedInstance] updateContact:updateContact :image andHandle:^(NSError * _Nullable error, NSString * _Nullable identifier) {
-        callback(error,identifier);
+    [[DContactStore sharedInstance] updateContact:updateContact :image withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
+         callback(error,identifier);
     }];
 }
 

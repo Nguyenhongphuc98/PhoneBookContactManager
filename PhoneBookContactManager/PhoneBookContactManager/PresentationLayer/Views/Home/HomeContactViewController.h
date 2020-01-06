@@ -10,6 +10,7 @@
 #import "ContactHomeViewModel.h"
 #import "NewContactViewController.h"
 #import "ContactTableViewCell.h"
+#import "DeniedViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -29,6 +29,8 @@
 		A9684E6823B0C17600539541 /* BContactStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A9684E6723B0C17600539541 /* BContactStore.m */; };
 		A9684E6B23B0C41B00539541 /* BContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A9684E6A23B0C41B00539541 /* BContactModel.m */; };
 		A9684E6E23B0CFBD00539541 /* ContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A9684E6D23B0CFBD00539541 /* ContactModel.m */; };
+		A97BDE6D23C32723008C5BE7 /* DeniedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97BDE6C23C32723008C5BE7 /* DeniedViewController.m */; };
+		A97BDE7223C32FC9008C5BE7 /* RoundButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A97BDE7123C32FC9008C5BE7 /* RoundButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +92,10 @@
 		A9684E6A23B0C41B00539541 /* BContactModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BContactModel.m; sourceTree = "<group>"; };
 		A9684E6C23B0CFBD00539541 /* ContactModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactModel.h; sourceTree = "<group>"; };
 		A9684E6D23B0CFBD00539541 /* ContactModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactModel.m; sourceTree = "<group>"; };
+		A97BDE6B23C32723008C5BE7 /* DeniedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeniedViewController.h; sourceTree = "<group>"; };
+		A97BDE6C23C32723008C5BE7 /* DeniedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeniedViewController.m; sourceTree = "<group>"; };
+		A97BDE7023C32FC9008C5BE7 /* RoundButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundButton.h; sourceTree = "<group>"; };
+		A97BDE7123C32FC9008C5BE7 /* RoundButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,6 +239,7 @@
 		A934964223A9DFD30072B4BF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				A97BDE6A23C326EC008C5BE7 /* DeniedView */,
 				A939BFAD23B34FF10019AC97 /* NewContact */,
 				A939BFAC23B34FDD0019AC97 /* Home */,
 				A9684E5023B0599300539541 /* Template */,
@@ -317,11 +324,38 @@
 		A9684E5023B0599300539541 /* Template */ = {
 			isa = PBXGroup;
 			children = (
+				A97BDE6F23C32FB3008C5BE7 /* Button */,
+				A97BDE6E23C32F9E008C5BE7 /* TableviewCell */,
+			);
+			path = Template;
+			sourceTree = "<group>";
+		};
+		A97BDE6A23C326EC008C5BE7 /* DeniedView */ = {
+			isa = PBXGroup;
+			children = (
+				A97BDE6B23C32723008C5BE7 /* DeniedViewController.h */,
+				A97BDE6C23C32723008C5BE7 /* DeniedViewController.m */,
+			);
+			path = DeniedView;
+			sourceTree = "<group>";
+		};
+		A97BDE6E23C32F9E008C5BE7 /* TableviewCell */ = {
+			isa = PBXGroup;
+			children = (
 				A9684E5423B05BD900539541 /* ContactTableViewCell.h */,
 				A9684E5523B05BD900539541 /* ContactTableViewCell.m */,
 				A9684E5623B05BD900539541 /* ContactTableViewCell.xib */,
 			);
-			path = Template;
+			path = TableviewCell;
+			sourceTree = "<group>";
+		};
+		A97BDE6F23C32FB3008C5BE7 /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				A97BDE7023C32FC9008C5BE7 /* RoundButton.h */,
+				A97BDE7123C32FC9008C5BE7 /* RoundButton.m */,
+			);
+			path = Button;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -458,12 +492,14 @@
 				A9684E5723B05BD900539541 /* ContactTableViewCell.m in Sources */,
 				A95D4A6D23B9A29200EF2717 /* EditingContactModel.m in Sources */,
 				A9684E6823B0C17600539541 /* BContactStore.m in Sources */,
+				A97BDE7223C32FC9008C5BE7 /* RoundButton.m in Sources */,
 				A934963D23A9C8BF0072B4BF /* DContactStore.m in Sources */,
 				A9684E6523B0B90500539541 /* ContactHomeViewModel.m in Sources */,
 				A934960C23A9C7630072B4BF /* PhoneBookContactManager.xcdatamodeld in Sources */,
 				A9684E6B23B0C41B00539541 /* BContactModel.m in Sources */,
 				A939BFB023B3501C0019AC97 /* NewContactViewController.m in Sources */,
 				A9684E6E23B0CFBD00539541 /* ContactModel.m in Sources */,
+				A97BDE6D23C32723008C5BE7 /* DeniedViewController.m in Sources */,
 				A9684E5323B05A0B00539541 /* HomeContactViewController.m in Sources */,
 				A939BFB523B3885D0019AC97 /* NewContactViewModel.m in Sources */,
 				A934961423A9C7650072B4BF /* main.m in Sources */,

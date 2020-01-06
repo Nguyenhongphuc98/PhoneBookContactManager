@@ -11,16 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^loadContactCompleteHandle)(NSMutableArray * _Nullable contactDTOArray, NSError *_Nullable error);
-typedef void(^loadImageCompleteHandle)(NSData *_Nullable image, NSError *_Nullable error);
-typedef void(^writeContactCompleteHandle)(NSError *_Nullable error,NSString *_Nullable identifier);
+typedef void(^loadContactCallback)(NSMutableArray * _Nullable contactDTOArray, NSError *_Nullable error);
+typedef void(^loadImageCallback)(NSData *_Nullable image, NSError *_Nullable error);
+typedef void(^writeContactCallback)(NSError *_Nullable error,NSString *_Nullable identifier);
 
 @interface DContactStore : NSObject
 
-@property NSMutableArray *loadContactCompleteHandleArray;
-@property dispatch_queue_t serialTaskQueue;
-@property dispatch_queue_t concurentReadWriteQueue;
-@property BOOL isLoadingContact;
+@property NSMutableArray        *loadContactCallbackArray;
+@property NSMutableArray        *callbackQueueArray;
+@property NSMutableDictionary   *callbackDictionary;
+@property dispatch_queue_t      serialTaskQueue;
+@property dispatch_queue_t      concurentReadWriteQueue;
+@property BOOL                  isLoadingContact;
 
 +(instancetype) sharedInstance;
 
@@ -29,18 +31,18 @@ typedef void(^writeContactCompleteHandle)(NSError *_Nullable error,NSString *_Nu
 -(void) checkAuthorizeStatus:(void(^) (BOOL granted, NSError *error)) callback;
 
 //read method
--(void) loadContactWithCompleteHandle: (loadContactCompleteHandle) callback;
+-(void) loadContactWithCallback: (loadContactCallback _Nonnull) callback onQueue:(dispatch_queue_t _Nullable) callbackQueue;
 
 -(void) responseContactForCallback: (NSError * _Nullable) error contactDTOArray: (NSMutableArray * _Nullable) contacts;
 
--(void) loadImageForIdentifier:(NSString*) identifier withHandle:(loadImageCompleteHandle) callback;
+-(void) loadImageForIdentifier:(NSString*) identifier withCallback:(loadImageCallback _Nonnull) callback;
 
 //write method
--(void) deleteContactWithIdentifier:(NSString*) identifier andHandle:(writeContactCompleteHandle) callback;
+-(void) deleteContactForIdentifier:(NSString*) identifier withCallback:(writeContactCallback) callback;
 
--(void) addNewContact:(DContactDTO*) contact :(NSData *) image andHandle:(writeContactCompleteHandle) callback;
+-(void) addNewContact:(DContactDTO*) contact :(NSData *_Nullable) image withCallback:(writeContactCallback) callback;
 
--(void) updateContact:(DContactDTO*) contact :(NSData *) image andHandle:(writeContactCompleteHandle) callback;
+-(void) updateContact:(DContactDTO*) contact :(NSData *_Nullable) image withCallback:(writeContactCallback) callback;
 
 @end
 

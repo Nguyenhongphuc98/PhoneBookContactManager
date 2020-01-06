@@ -9,24 +9,27 @@
 #import <Foundation/Foundation.h>
 #import "DContactStore.h"
 #import "BContactModel.h"
+#import "ContactModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^loadBusinessContactCompleteHandle)(NSMutableArray * _Nullable businesscontactArray, NSError *_Nullable error);
+typedef void(^loadBusinessContactCallback)(NSMutableArray * _Nullable businesscontactArray, NSError *_Nullable error);
+typedef void(^dictionaryContactCallback)(NSMutableDictionary * _Nullable dicContacts, NSMutableArray * _Nullable sections, NSError *_Nullable error);
 
 @interface BContactStore : NSObject
 
 -(void) checkAuthorizeStatus:(void(^) (BOOL granted, NSError *error)) callBack;
 
--(void) loadContactWithCompleteHandle: (loadBusinessContactCompleteHandle) callback;
+-(void) loadContactWithCallback:(loadBusinessContactCallback) callback;
+-(void) loadContactWithCallback2:(dictionaryContactCallback) callback;
 
--(void) loadImageForIdentifier:(NSString *)identifier withHandle: (loadImageCompleteHandle) callback;
+-(void) loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback) callback;
 
-- (void)deleteContactWithIdentifier:(NSString *)identifier andHandle:(nonnull writeContactCompleteHandle)callback;
+-(void) deleteContactForIdentifier:(NSString *)identifier withCallback:(writeContactCallback) callback;
 
--(void) addNewContact:(BContactModel*) contact :(NSData *) image andHandle:(writeContactCompleteHandle) callback;
+-(void) addNewContact:(BContactModel*) contact :(NSData *) image withCallback:(writeContactCallback) callback;
 
--(void) updateContact:(BContactModel*) contact :(NSData *) image andHandle:(writeContactCompleteHandle) callback;
+-(void) updateContact:(BContactModel*) contact :(NSData *) image withCallback:(writeContactCallback) callback;
 @end
 
 NS_ASSUME_NONNULL_END

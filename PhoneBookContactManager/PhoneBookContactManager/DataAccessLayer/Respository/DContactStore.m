@@ -10,7 +10,7 @@
 
 @implementation DContactStore
 
-+(instancetype) sharedInstance{
++(instancetype) sharedInstance {
     static DContactStore *sharedInstance;
     static dispatch_once_t onceToken;
     
@@ -21,20 +21,22 @@
     return sharedInstance;
 }
 
--(instancetype) init{
+-(instancetype) init {
     self=[super init];
     
     if(self){
-        _loadContactCompleteHandleArray = [[NSMutableArray alloc] init];
-        _serialTaskQueue = dispatch_queue_create("main task queue", DISPATCH_QUEUE_SERIAL);
-        _concurentReadWriteQueue = dispatch_queue_create("readwrite queue", DISPATCH_QUEUE_CONCURRENT); //allow mutil read avatar, block write with dispatch barries
+        _loadContactCallbackArray   = [[NSMutableArray alloc] init];
+        _callbackQueueArray         = [[NSMutableArray alloc] init];
+        _callbackDictionary         = [[NSMutableDictionary alloc] init];
+        _serialTaskQueue            = dispatch_queue_create("main task queue", DISPATCH_QUEUE_SERIAL);
+        _concurentReadWriteQueue    = dispatch_queue_create("readwrite queue", DISPATCH_QUEUE_CONCURRENT); //allow mutil read avatar, block write with dispatch barries
         _isLoadingContact = NO;
     }
     
     return self;
 }
 
--(void) checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nullable))callback{
+-(void) checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nullable)) callback {
     
     CNEntityType entityType = CNEntityTypeContacts;
     CNAuthorizationStatus authorizationStatus=[CNContactStore authorizationStatusForEntityType:entityType];
@@ -75,22 +77,37 @@
     }
 }
 
--(void) loadContactWithCompleteHandle:(loadContactCompleteHandle)callback{
+-(void) loadContactWithCallback:(loadContactCallback)callback onQueue:(dispatch_queue_t) callbackQueue {
     
     //block nil can make crash app
-    if(callback==nil)
+    if(callback == nil) {
+        
         return;
+    }
     
     dispatch_async(_serialTaskQueue, ^{
         
         //add block to array to transfer later
-        [self.loadContactCompleteHandleArray addObject:callback];
+        if(callbackQueue == nil){
+            [self.loadContactCallbackArray addObject:callback];
+        }else {
+            //check cb queue exists
+            NSString *queueName = [[NSString alloc] initWithFormat: @"%s", dispatch_queue_get_label(callbackQueue)];
+            if([self.callbackQueueArray containsObject:callbackQueue]){
+                [[self.callbackDictionary objectForKey:queueName] addObject:callback];
+            }else {
+                [self.callbackQueueArray addObject:callbackQueue];
+                NSMutableArray *cbArr = [NSMutableArray new];
+                [cbArr addObject:callback];
+                [self.callbackDictionary setObject:cbArr forKey:queueName];
+            }
+        }
         
         //don't load contact when have other thread is loading from device or transfer data to callbaclk
         if(self.isLoadingContact)
             return;
         
-        self.isLoadingContact=YES;
+        self.isLoadingContact = YES;
         
         //loading on other thead to don't have wait to add block to completeHandle array
         //just read one time -> don't worry about concurrent queue
@@ -127,7 +144,7 @@
     });
 }
 
--(void) responseContactForCallback:(NSError * _Nullable)error contactDTOArray:(NSMutableArray * _Nullable)contacts{
+-(void) responseContactForCallback:(NSError * _Nullable)error contactDTOArray:(NSMutableArray * _Nullable) contacts {
     
     //transfer on one queue (serial task queue) with addblock to make sure no block added when transfering
     dispatch_async(self.serialTaskQueue, ^{
@@ -138,23 +155,40 @@
             contactForTransferArray = [contacts copy];
         }
         
-        for (loadContactCompleteHandle callback in self.loadContactCompleteHandleArray) {
+        //response for request don't have queue
+        for (loadContactCallback callback in self.loadContactCallbackArray) {
             if(callback!=nil){
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                     callback(contactForTransferArray,error);
                 });
-            }
-            else
+            }else
                 NSLog(@"callback == nill");
         }
         
+        //response on special queue
+        for (dispatch_queue_t queue in self.callbackQueueArray) {
+            NSString *queueName = [[NSString alloc] initWithFormat: @"%s", dispatch_queue_get_label(queue)];
+            NSMutableArray *cbArray = [self.callbackDictionary objectForKey:queueName];
+            
+            for (loadContactCallback callback in cbArray) {
+                if(callback!=nil){
+                    dispatch_async(queue, ^{
+                        callback(contactForTransferArray,error);
+                    });
+                }else
+                    NSLog(@"callback == nill");
+            }
+        }
+        
         //refesh data for next time
-        [self.loadContactCompleteHandleArray removeAllObjects];
+        [self.loadContactCallbackArray removeAllObjects];
+        [self.callbackQueueArray removeAllObjects];
+        [self.callbackDictionary removeAllObjects];
         self.isLoadingContact = NO;
     });
 }
 
-- (void)loadImageForIdentifier:(NSString *)identifier withHandle:(loadImageCompleteHandle)callback{
+- (void)loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback _Nonnull)callback {
     
     if(callback == nil || identifier == nil)
         return;
@@ -167,14 +201,13 @@
         CNContact *contact = [contactStore unifiedContactWithIdentifier:identifier keysToFetch:@[CNContactImageDataKey] error:&loadImageError];
         if(loadImageError){
             callback(nil,loadImageError);
-        }
-        else
+        }else
             callback([contact imageData],nil);
     });
 }
 
 //write method ===================================================
-- (void)deleteContactWithIdentifier:(NSString *)identifier andHandle:(nonnull writeContactCompleteHandle)callback{
+- (void)deleteContactForIdentifier:(NSString *)identifier  withCallback:(nonnull writeContactCallback) callback {
     if(identifier==nil || callback == nil)
         return;
     
@@ -183,11 +216,9 @@
         NSError *__block deleteError;
         
         CNContact *contact = [contactStore unifiedContactWithIdentifier:identifier keysToFetch:@[CNContactPhoneNumbersKey] error:&deleteError];
-        if(deleteError){
+        if(deleteError) {
             callback(deleteError,nil);
-        }
-        else
-        {
+        } else {
             //excute delete on this contact
             dispatch_barrier_async(self.concurentReadWriteQueue, ^{
                 CNSaveRequest * saveRequest = [CNSaveRequest new];
@@ -202,7 +233,7 @@
     });
 }
 
-- (void)addNewContact:(DContactDTO *)contact :(NSData*) image andHandle:(writeContactCompleteHandle)callback{
+- (void)addNewContact:(DContactDTO *)contact :(NSData*) image withCallback:(nonnull writeContactCallback) callback {
     
     if(contact == nil || callback == nil)
         return;
@@ -235,14 +266,13 @@
                     callback(nil,[newContact identifier]);
                 else
                     callback(nil,nil);
-            }
-            else
+            }else
                 callback(addcontactError,nil);
             });
     });
 }
 
-- (void)updateContact:(DContactDTO *)contact :(NSData *)image andHandle:(writeContactCompleteHandle)callback{
+- (void)updateContact:(DContactDTO *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
     if(contact == nil || callback == nil)
         return;
     
@@ -260,8 +290,7 @@
         CNContact *cnContact = [contactStore unifiedContactWithIdentifier:contact.identifier keysToFetch:keysToFetch error:&updateError];
         if(updateError){
             callback(updateError,nil);
-        }
-        else
+        }else
         {
             CNMutableContact *newContact = [cnContact mutableCopy];
             newContact.givenName = contact.givenName;

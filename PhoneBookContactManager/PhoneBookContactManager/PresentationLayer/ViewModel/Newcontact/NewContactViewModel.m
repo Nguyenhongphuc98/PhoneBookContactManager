@@ -15,15 +15,14 @@
         BContactStore *contactStore = [BContactStore new];
         BContactModel *newContact = [self convertContactModelToBContactModel:model];
         
-        [contactStore addNewContact:newContact :imageData andHandle:^(NSError * _Nullable error, NSString *identifier) {
+        [contactStore addNewContact:newContact :imageData withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
             if(error)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(onAddNewContactFail)])
                         [self.delegate onAddNewContactFail];
                 });
-            }
-            else
+            }else
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(onAddNewContactSuccess:)])
@@ -44,15 +43,14 @@
         if(image)
             [[CacheStore sharedInstance] setImage:image for:contactNeedUpdate.identifier];
         
-        [contactStore updateContact:contactNeedUpdate :imageData andHandle:^(NSError * _Nullable error, NSString *identifier) {
+        [contactStore updateContact:contactNeedUpdate :imageData withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
             if(error)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(onUpdateContactFail)])
                         [self.delegate onUpdateContactFail];
                 });
-            }
-            else
+            }else
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(onUpdateContactSuccess:)])

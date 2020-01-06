@@ -15,6 +15,7 @@
 @property BContactStore *contactStore;
 @property dispatch_queue_t serialSearchQueue;
 @property BOOL isSearching;
+@property BOOL isNeedReload;
 
 @end
 
@@ -30,6 +31,7 @@
         self.contactStore = [[BContactStore alloc] init];
         self.serialSearchQueue = dispatch_queue_create("search queue", DISPATCH_QUEUE_SERIAL);
         self.isSearching = NO;
+        self.isNeedReload = YES;
     }
     return self;
 }
@@ -52,39 +54,17 @@
 - (void)loadContactFromBussinessLayer{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [self.contactStore loadContactWithCompleteHandle:^(NSMutableArray * _Nullable businesscontactArray, NSError * _Nullable error) {
+        [self.contactStore loadContactWithCallback2:^(NSMutableDictionary * _Nullable dicContacts, NSMutableArray * _Nullable sections, NSError * _Nullable error) {
             if(error){
                 if([self.delegate respondsToSelector:@selector(showFailToLoadContact)])
                     [self.delegate showFailToLoadContact];
-            }
-            else{
+            }else {
                 //clear exists contact
                 [self.contactDictionary removeAllObjects];
                 [self.sessitonArray removeAllObjects];
                 
-                //add contact to dictionary
-                for (BContactModel *contact in businesscontactArray) {
-                    ContactModel *model = [[ContactModel alloc] initWithBusinessContact:contact];
-                    NSString *sessionName;
-                    if([[model avatarName] length] == 1)
-                        sessionName = [model avatarName];
-                    else
-                        sessionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
-                    
-                    //add session
-                    if([self.contactDictionary objectForKey:sessionName] == nil){
-                        //add new session if not exists
-                        NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
-                        [contactSessionArray addObject:model];
-                        [self.contactDictionary setObject:contactSessionArray forKey:sessionName];
-                    }
-                    else
-                        [[self.contactDictionary objectForKey:sessionName] addObject:model];
-                }
-                
-                //sort A->Z
-                NSMutableArray *tempArray = [[NSMutableArray alloc] initWithArray:[self.contactDictionary allKeys]];
-                self.sessitonArray = [[NSMutableArray alloc] initWithArray:[tempArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
+                self.contactDictionary = dicContacts;
+                self.sessitonArray = sections;
                 
                 if([self.delegate respondsToSelector:@selector(loadDataComplete)])
                     dispatch_sync(dispatch_get_main_queue(), ^{
@@ -95,15 +75,18 @@
             }
         }];
     });
+    
+    self.isNeedReload = NO;
 }
 
 -(void)searchWithString:(NSString *)keyToSearch{
     dispatch_async(self.serialSearchQueue, ^{
         if(keyToSearch.length == 0){
             self.isSearching = NO;
-            [self loadContactFromBussinessLayer];
-        }
-        else{
+            
+            if(self.isNeedReload)
+                [self loadContactFromBussinessLayer];
+        }else {
             self.isSearching = YES;
             [self.contactSearchArray removeAllObjects];
             
@@ -119,12 +102,12 @@
                     }
                 }
             }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if([self.delegate respondsToSelector:@selector(loadDataComplete)])
-                    [self.delegate loadDataComplete];
-            });
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if([self.delegate respondsToSelector:@selector(loadDataComplete)])
+                [self.delegate loadDataComplete];
+        });
     });
 }
 
@@ -186,15 +169,14 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSString * sectionKey = [self.sessitonArray objectAtIndex:section];
             ContactModel *contactNeedDelete = [[self.contactDictionary objectForKey:sectionKey] objectAtIndex:row];
-            [self.contactStore deleteContactWithIdentifier:contactNeedDelete.identifier andHandle:^(NSError * _Nullable error, NSString* identifier) {
+            [self.contactStore deleteContactForIdentifier:contactNeedDelete.identifier withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
                 if(error){
                     //show err on UI
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if([self.delegate respondsToSelector:@selector(deleteContactFail)])
                             [self.delegate deleteContactFail];
                     });
-                }
-                else{
+                }else{
                     //delete from data source
                     [[self.contactDictionary objectForKey:sectionKey] removeObjectAtIndex:row];
                     //update in fo on UI
@@ -208,8 +190,7 @@
                 }
             }];
         });
-    }
-    else
+    }else
     {
         [self removeCellInSearchMode:section andRow:row];
     }
@@ -221,7 +202,7 @@
     //delete in device
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         ContactModel *contactNeedDelete = [self.contactSearchArray objectAtIndex:row];
-        [self.contactStore deleteContactWithIdentifier:contactNeedDelete.identifier andHandle:^(NSError * _Nullable error, NSString* identifier) {
+        [self.contactStore deleteContactForIdentifier:contactNeedDelete.identifier withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
             if(error){
                 //show err on UI
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -273,7 +254,6 @@
                     }
                 });
             }
-            
         }];
     });
 }
@@ -292,15 +272,14 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSString * sectionKey = [self.sessitonArray objectAtIndex:section];
                 ContactModel *contactNeedDelete = [[self.contactDictionary objectForKey:sectionKey] objectAtIndex:0];
-                [self.contactStore deleteContactWithIdentifier:contactNeedDelete.identifier andHandle:^(NSError * _Nullable error, NSString *identifier) {
+                [self.contactStore deleteContactForIdentifier:contactNeedDelete.identifier withCallback:^(NSError * _Nullable error, NSString *identifier) {
                     if(error){
                         //show err on UI
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if([self.delegate respondsToSelector:@selector(deleteContactFail)])
                                 [self.delegate deleteContactFail];
                         });
-                    }
-                    else{
+                    }else{
                         //delete from data source
                         [[self.contactDictionary objectForKey:sectionKey] removeAllObjects];
                         [self.contactDictionary removeObjectForKey:sectionKey];
@@ -351,15 +330,13 @@
             //re sort A->Z session
             NSMutableArray *tempArray = [[NSMutableArray alloc] initWithArray:[self.contactDictionary allKeys]];
             self.sessitonArray = [[NSMutableArray alloc] initWithArray:[tempArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
-        }
-        else
+        }else
             [[self.contactDictionary objectForKey:sessionName] addObject:model];
         
         if([self.delegate respondsToSelector:@selector(loadDataComplete)])
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [self.delegate loadDataComplete];
             });
-        
         else
             NSLog(@"unresponds to selector");
     });
@@ -387,53 +364,48 @@
             
             if([newSectionName isEqualToString:oldSectionName])
                 [[self.contactDictionary objectForKey:oldSectionName] replaceObjectAtIndex:editContactModel.indexPath.row withObject: model];
-            else
-            {
+            else {
                 [self moveContactToOtherSection:model index:editContactModel.indexPath oldSection:oldSectionName newSection:newSectionName];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if([self.delegate respondsToSelector:@selector(loadDataComplete)])
-                    [self.delegate loadDataComplete];
-                });
+                //resort section
+                self.sessitonArray = [[NSMutableArray alloc] initWithArray:[self.sessitonArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
             }
-        }
-       else
-       {
-           //update model after searching
-           //update model searching
-           for (ContactModel *m in self.contactSearchArray) {
-               if([m.identifier isEqualToString:editContactModel.contactModel.identifier])
-               {
-                   m.avatarName = model.avatarName;
-                   m.fullName   = model.fullName;
-                   m.givenName  = model.givenName;
-                   m.middleName = model.middleName;
-                   m.familyName = model.familyName;
-                   m.phoneNumberArray = model.phoneNumberArray;
-                   break;
+        }else {
+               //update model after searching
+               //update model searching
+               for (ContactModel *m in self.contactSearchArray) {
+                   if([m.identifier isEqualToString:editContactModel.contactModel.identifier])
+                   {
+                       m.avatarName = model.avatarName;
+                       m.fullName   = model.fullName;
+                       m.givenName  = model.givenName;
+                       m.middleName = model.middleName;
+                       m.familyName = model.familyName;
+                       m.phoneNumberArray = model.phoneNumberArray;
+                       break;
+                   }
                }
-           }
-           
-           //update model in dictionary
-           //get contact in this section
-           NSString *sectionName;
-           if([[model avatarName] length] == 1)
-               sectionName = [model avatarName];
-           else
-               sectionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
-
-           for (ContactModel *mDic in [self.contactDictionary objectForKey:sectionName]) {
-               if([mDic.identifier isEqualToString:model.identifier])
-               {
-                   mDic.avatarName = model.avatarName;
-                   mDic.fullName   = model.fullName;
-                   mDic.givenName  = model.givenName;
-                   mDic.middleName = model.middleName;
-                   mDic.familyName = model.familyName;
-                   mDic.phoneNumberArray = model.phoneNumberArray;
-                   break;
-               }
-           }
+            
+            //update model in dictionary
+            self.isNeedReload =YES;
+               //get contact in this section
+//               NSString *sectionName;
+//               if([[model avatarName] length] == 1)
+//                   sectionName = [model avatarName];
+//               else
+//                   sectionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
+//
+//               for (ContactModel *mDic in [self.contactDictionary objectForKey:sectionName]) {
+//                   if([mDic.identifier isEqualToString:model.identifier])
+//                   {
+//                       mDic.avatarName = model.avatarName;
+//                       mDic.fullName   = model.fullName;
+//                       mDic.givenName  = model.givenName;
+//                       mDic.middleName = model.middleName;
+//                       mDic.familyName = model.familyName;
+//                       mDic.phoneNumberArray = model.phoneNumberArray;
+//                       break;
+//                   }
+//               }
            
        }
         
@@ -441,7 +413,6 @@
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [self.delegate loadDataComplete];
             });
-        
         else
             NSLog(@"unresponds to selector");
     });
@@ -462,8 +433,7 @@
         [self.contactDictionary setObject:contactSessionArray forKey:newSectionName];
         
         [self.sessitonArray addObject:newSectionName];
-    }
-    else
+    } else
         [[self.contactDictionary objectForKey:newSectionName] addObject:model];
 }
 

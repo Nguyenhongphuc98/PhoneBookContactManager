@@ -226,7 +226,7 @@
         newContact.familyName = lastName;
         newContact.phoneNumberArray = phoneArray;
         
-        self.editContactModel.contactModel = newContact;
+        self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
         [self.viewModel updateContact:newContact :imageData];
     });
 }
