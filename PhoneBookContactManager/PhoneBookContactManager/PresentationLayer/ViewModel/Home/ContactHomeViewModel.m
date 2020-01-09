@@ -177,8 +177,7 @@
                     [[self.contactDictionary objectForKey:sectionKey] removeObjectAtIndex:row];
                     //update in fo on UI
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)])
-                        {
+                        if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)]) {
                             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
                             [self.delegate deleteContactSuccess:indexPath removeSection:NO];
                         }
@@ -292,8 +291,10 @@
 }
 
 - (void)addNewContact:(EditingContactModel *)editContactModel {
-    if(editContactModel == nil)
+    if(editContactModel == nil) {
+        NSAssert(editContactModel != nil, @"Param 'editContactModel' should be a nonnull value.");
         return;
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         ContactModel *model = editContactModel.contactModel;
@@ -357,8 +358,7 @@
                //update model after searching
                //update model searching
                for (ContactModel *m in self.contactSearchArray) {
-                   if([m.identifier isEqualToString:editContactModel.contactModel.identifier])
-                   {
+                   if([m.identifier isEqualToString:editContactModel.contactModel.identifier]) {
                        m.avatarName = model.avatarName;
                        m.fullName   = model.fullName;
                        m.givenName  = model.givenName;

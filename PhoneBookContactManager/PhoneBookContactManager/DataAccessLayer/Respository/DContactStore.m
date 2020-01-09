@@ -24,7 +24,7 @@
 - (instancetype)init {
     self=[super init];
     
-    if(self){
+    if(self) {
         _loadContactCallbackArray   = [[NSMutableArray alloc] init];
         _callbackQueueArray         = [[NSMutableArray alloc] init];
         _callbackDictionary         = [[NSMutableDictionary alloc] init];
@@ -99,7 +99,7 @@
             NSString *queueName = [[NSString alloc] initWithFormat: @"%s", dispatch_queue_get_label(callbackQueue)];
             if([self.callbackQueueArray containsObject:callbackQueue]){
                 [[self.callbackDictionary objectForKey:queueName] addObject:callback];
-            }else {
+            } else {
                 [self.callbackQueueArray addObject:callbackQueue];
                 NSMutableArray *cbArr = [NSMutableArray new];
                 [cbArr addObject:callback];
@@ -116,8 +116,7 @@
         //loading on other thead to don't have wait to add block to completeHandle array
         //just read one time -> don't worry about concurrent queue
         dispatch_async(self.concurentReadWriteQueue, ^{
-            if([CNContactStore class])
-            {
+            if([CNContactStore class]) {
                 CNContactStore *contactStore = [[CNContactStore alloc] init];
                 NSArray *keysToFetch = @[CNContactIdentifierKey,
                                          CNContactFamilyNameKey,
@@ -155,7 +154,7 @@
         
         //using for transfer and avoid remove object needed when remove object from contacts (async)
         NSMutableArray * contactForTransferArray =[[NSMutableArray alloc] init];
-        if(contacts!=nil){
+        if(contacts!=nil) {
             contactForTransferArray = [contacts copy];
         }
         
@@ -166,7 +165,7 @@
                     callback(contactForTransferArray,error);
                 });
             } else
-                NSLog(@"callback == nill");
+                NSLog(@"callback nil");
         }
         
         //response on special queue
@@ -180,7 +179,7 @@
                         callback(contactForTransferArray,error);
                     });
                 } else
-                    NSLog(@"callback == nill");
+                    NSLog(@"callback nil");
             }
         }
         
@@ -273,8 +272,7 @@
             CNSaveRequest * saveRequest = [CNSaveRequest new];
             [saveRequest addContact:newContact toContainerWithIdentifier:nil];
             BOOL excuteResult = [contactStore executeSaveRequest:saveRequest error:&addcontactError];
-            if(excuteResult)
-            {
+            if(excuteResult) {
                 if([newContact isKeyAvailable:CNContactIdentifierKey])
                     callback(nil,[newContact identifier]);
                 else
@@ -304,7 +302,7 @@
                                  CNContactImageDataKey];
         
         CNContact *cnContact = [contactStore unifiedContactWithIdentifier:contact.identifier keysToFetch:keysToFetch error:&updateError];
-        if(updateError){
+        if(updateError) {
             callback(updateError,nil);
         } else {
             CNMutableContact *newContact = [cnContact mutableCopy];
@@ -333,7 +331,7 @@
     });
 }
 
-- (NSMutableArray*)genratePhoneNumberArray:(DContactDTO *) contact{
+- (NSMutableArray*)genratePhoneNumberArray:(DContactDTO *) contact {
     if(contact == nil) {
         NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         return nil;
@@ -343,12 +341,12 @@
     CNLabeledValue *workPhone;
     NSMutableArray *labelArray =[NSMutableArray new];
     
-    if(contact.phoneNumberArray.count ==1 ){
+    if(contact.phoneNumberArray.count == 1) {
         homePhone = [CNLabeledValue labeledValueWithLabel:CNLabelHome value:[CNPhoneNumber phoneNumberWithStringValue:contact.phoneNumberArray[0]]];
         [labelArray addObject:homePhone];
     }
     
-    if(contact.phoneNumberArray.count ==2 ){
+    if(contact.phoneNumberArray.count == 2) {
         homePhone = [CNLabeledValue labeledValueWithLabel:CNLabelHome value:[CNPhoneNumber phoneNumberWithStringValue:contact.phoneNumberArray[0]]];
         [labelArray addObject:homePhone];
         

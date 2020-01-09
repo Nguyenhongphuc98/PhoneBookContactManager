@@ -55,14 +55,13 @@
                     [[CacheStore sharedInstance] setImage:imageFromDevice for:model.identifier];
                 } else {
                     UIImage * __block imageFromText;
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                    dispatch_sync(dispatch_get_main_queue(), ^{
                         //create avatar with text and save to cache
                         imageFromText = [self drawText:[model avatarName]];
                         self.contactAvatar.image = imageFromText;
-                        
-                        //save to store cache
-                        [[CacheStore sharedInstance] setImage:imageFromText for:model.identifier];
                     });
+                    //save to store cache
+                    [[CacheStore sharedInstance] setImage:imageFromText for:model.identifier];
                 }
             }];
         });

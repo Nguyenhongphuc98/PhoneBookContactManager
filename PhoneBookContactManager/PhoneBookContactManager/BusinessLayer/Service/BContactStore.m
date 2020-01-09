@@ -30,9 +30,9 @@
     dispatch_queue_t businessQueue = dispatch_queue_create("from busseness", DISPATCH_QUEUE_CONCURRENT);
     dispatch_async(businessQueue, ^{
         [[DContactStore sharedInstance] loadContactWithCallback:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
-            if(error){
+            if(error) {
                 callback(nil,nil,error);
-            }else {
+            } else {
                 NSMutableArray *BContactModelArray = [[NSMutableArray alloc] init];
                 for (DContactDTO * contactDTO in contactDTOArray) {
                     [BContactModelArray addObject:[[BContactModel alloc] initWithDContactDTO: contactDTO]];
@@ -51,12 +51,12 @@
                         sessionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
                     
                     //add session
-                    if([contactDictionary objectForKey:sessionName] == nil){
+                    if([contactDictionary objectForKey:sessionName] == nil) {
                         //add new session if not exists
                         NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
                         [contactSessionArray addObject:model];
                         [contactDictionary setObject:contactSessionArray forKey:sessionName];
-                    }else
+                    } else
                         [[contactDictionary objectForKey:sessionName] addObject:model];
                 }
                 
@@ -124,7 +124,7 @@
     }];
 }
 
-- (DContactDTO*)convertBcontactToDcontactDTO:(BContactModel*) contact{
+- (DContactDTO*)convertBcontactToDcontactDTO:(BContactModel*)contact {
     if(contact == nil) {
         NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         return nil;

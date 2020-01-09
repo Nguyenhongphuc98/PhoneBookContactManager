@@ -75,7 +75,7 @@
 - (void)setUpViewDetail {
     [self.btnSaveContact setTitle:@"Edit" forState:UIControlStateNormal];
     
-    if(self.editContactModel.contactModel != nil){
+    if(self.editContactModel.contactModel != nil) {
         self.tfFirstName.userInteractionEnabled = NO;
         self.tfMiddleName.userInteractionEnabled = NO;
         self.tfLastName.userInteractionEnabled = NO;
@@ -86,14 +86,12 @@
         self.tfMiddleName.text = self.editContactModel.contactModel.middleName;
         self.tfLastName.text = self.editContactModel.contactModel.familyName;
         
-        if(self.editContactModel.contactModel.phoneNumberArray.count ==2)
-        {
+        if(self.editContactModel.contactModel.phoneNumberArray.count ==2) {
             self.textFieldWorkPhone.hidden = NO;
             self.textFieldWorkPhone.text = self.editContactModel.contactModel.phoneNumberArray[1];
         }
         
-        if(self.editContactModel.contactModel.phoneNumberArray.count >0)
-        {
+        if(self.editContactModel.contactModel.phoneNumberArray.count >0) {
             self.textFieldHomePhone.hidden = NO;
             self.textFieldHomePhone.text = self.editContactModel.contactModel.phoneNumberArray[0];
         }
@@ -251,7 +249,7 @@
     
     UIImage* originalImage = nil;
     originalImage = [info objectForKey:UIImagePickerControllerEditedImage];
-    if(originalImage==nil) {
+    if(originalImage == nil) {
         originalImage = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
     

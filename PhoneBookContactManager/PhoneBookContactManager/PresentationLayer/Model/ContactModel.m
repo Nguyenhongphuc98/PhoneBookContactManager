@@ -16,7 +16,7 @@
         return nil;
     }
     
-    self=[super init];
+    self = [super init];
     if(self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
@@ -44,7 +44,7 @@
         return nil;
     }
     
-    self=[super init];
+    self = [super init];
     if(self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         

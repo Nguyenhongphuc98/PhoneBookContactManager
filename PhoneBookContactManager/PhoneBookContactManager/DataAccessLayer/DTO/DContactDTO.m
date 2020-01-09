@@ -11,8 +11,8 @@
 @implementation DContactDTO
 
 - (instancetype)initWithCNContact:(CNContact *)cnContact {
-    if(cnContact==nil) {
-        NSLog(@"cnContact is nil");
+    if(cnContact == nil) {
+        NSAssert(cnContact != nil, @"Param 'cnCcontact' should be a nonnull value.");
         return nil;
     }
     
