@@ -38,7 +38,7 @@
     [self setUp];
 }
 
--(void) setUp{
+- (void)setUp {
     self.avatarImage.layer.cornerRadius = self.avatarImage.frame.size.width/2;
     self.countClickAddPhone = 0;
     self.isAvatarChange = NO;
@@ -63,7 +63,7 @@
     }
 }
 
--(void) setUpAddNewContact{
+- (void)setUpAddNewContact {
     [self.btnSaveContact setTitle:@"Save" forState:UIControlStateNormal];
     [self.btnSaveContact setEnabled:NO];
     self.textFieldHomePhone.hidden = YES;
@@ -72,7 +72,7 @@
     self.lbWork.hidden = YES;
 }
 
--(void) setUpViewDetail{
+- (void)setUpViewDetail {
     [self.btnSaveContact setTitle:@"Edit" forState:UIControlStateNormal];
     
     if(self.editContactModel.contactModel != nil){
@@ -118,16 +118,13 @@
     if(self.countClickAddPhone>2)
         return;
 
-    if(self.countClickAddPhone == 1)
-    {
+    if(self.countClickAddPhone == 1) {
         [UIView animateWithDuration:2 animations:^{
             self.textFieldHomePhone.hidden = NO;
             self.lbHome.hidden = NO;
         }];
         [self resetSaveButton];
-    }
-    else
-    {
+    } else {
         [UIView animateWithDuration:2 animations:^{
             self.textFieldWorkPhone.hidden = NO;
             self.lbWork.hidden = NO;
@@ -158,7 +155,12 @@
     }
 }
 
--(void) saveNewContactToDevice{
+- (void)saveNewContactToDevice {
+    if(!self.isHavePermission) {
+        DeniedViewController *viewDenied = [self.storyboard instantiateViewControllerWithIdentifier:@"DeniedViewController"];
+        [self.navigationController presentViewController:viewDenied animated:YES completion:nil];
+        return;
+    }
     NSString *firstName =([self.tfFirstName.text isEqualToString:@""])?@"":self.tfFirstName.text;
     NSString *secondName =([self.tfMiddleName.text isEqualToString:@""])?@"":self.tfMiddleName.text;
     NSString *lastName =([self.tfLastName.text isEqualToString:@""])?@"":self.tfLastName.text;
@@ -183,12 +185,12 @@
         newContact.familyName = lastName;
         newContact.phoneNumberArray = phoneArray;
         
-        self.editContactModel.contactModel = newContact;
-        [self.viewModel addNewContact:newContact :imageData];
+        self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
+        [self.viewModel addNewContact:self.editContactModel.contactModel :imageData];
     });
 }
 
--(void) prepareForEditcontact{
+- (void)prepareForEditcontact {
     self.editContactModel.action = EditContact;
     [self.btnSaveContact setTitle:@"Save" forState:UIControlStateNormal];
     
@@ -200,7 +202,12 @@
     self.btnAddPhone.hidden = NO;
 }
 
--(void) editContactToDevice{
+- (void)editContactToDevice {
+    if(!self.isHavePermission) {
+        DeniedViewController *viewDenied = [self.storyboard instantiateViewControllerWithIdentifier:@"DeniedViewController"];
+        [self.navigationController presentViewController:viewDenied animated:YES completion:nil];
+        return;
+    }
     NSString *firstName =([self.tfFirstName.text isEqualToString:@""])?@"":self.tfFirstName.text;
     NSString *secondName =([self.tfMiddleName.text isEqualToString:@""])?@"":self.tfMiddleName.text;
     NSString *lastName =([self.tfLastName.text isEqualToString:@""])?@"":self.tfLastName.text;
@@ -227,11 +234,11 @@
         newContact.phoneNumberArray = phoneArray;
         
         self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
-        [self.viewModel updateContact:newContact :imageData];
+        [self.viewModel updateContact:self.editContactModel.contactModel :imageData];
     });
 }
 
--(void) resetSaveButton{
+- (void)resetSaveButton {
     if([self.tfFirstName.text length] == 0 && [self.tfMiddleName.text length] == 0 &&[self.tfLastName.text length] == 0 && self.isAvatarChange == NO && self.countClickAddPhone == 0)
         [self.btnSaveContact setEnabled:NO];
     else
@@ -239,15 +246,13 @@
 }
 
 // uiimage view controller delegate
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info{
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
     [self dismissViewControllerAnimated:YES completion:nil];
     
     UIImage* originalImage = nil;
     originalImage = [info objectForKey:UIImagePickerControllerEditedImage];
-    if(originalImage==nil)
-    {
+    if(originalImage==nil) {
         originalImage = [info objectForKey:UIImagePickerControllerOriginalImage];
-        
     }
     
     self.isAvatarChange = YES;
@@ -255,37 +260,37 @@
     self.avatarImage.image = originalImage;
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [self dismissViewControllerAnimated:YES completion:nil];
     self.isAvatarChange = NO;
 }
 
 
 //observer for viewmodel
-- (void)onAddNewContactSuccess:(NSString*) identifier{
+- (void)onAddNewContactSuccess:(NSString*) identifier {
     self.editContactModel.contactModel.identifier = identifier;
     [self notifyModelChangeToHomeController];
 }
 
-- (void)onAddNewContactFail{
+- (void)onAddNewContactFail {
     [self showOKMessageWithTitle:@"Fail to save" andMess:@"try later"];
 }
 
-- (void)onUpdateContactSuccess:(NSString *)identifier{
+- (void)onUpdateContactSuccess:(NSString *)identifier {
     [self notifyModelChangeToHomeController];
 }
 
-- (void)onUpdateContactFail{
+- (void)onUpdateContactFail {
     [self showOKMessageWithTitle:@"Fail to update" andMess:@"try later"];
 }
 
--(void) notifyModelChangeToHomeController{
+- (void)notifyModelChangeToHomeController {
     NSDictionary *dic = @{@"keyProcessContact":self.editContactModel};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"processContactNotify" object:self userInfo:dic];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(void) showOKMessageWithTitle:(NSString *) title andMess:(NSString *) mes{
+- (void)showOKMessageWithTitle:(NSString *) title andMess:(NSString *) mes {
     UIAlertController *alertDenied = [UIAlertController alertControllerWithTitle:title
                                                                          message:mes
                                                                   preferredStyle:UIAlertControllerStyleAlert];

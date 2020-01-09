@@ -30,18 +30,10 @@
     self.backgroundColor = self.backgroundNormalState;
 }
 
-- (void)setHighlighted:(BOOL) highlighted {
+- (void)setHighlighted:(BOOL)highlighted {
     if(highlighted)
         self.backgroundColor = self.backgroundHightLightState;
     else
         self.backgroundColor = self.backgroundNormalState;
 }
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-
 @end

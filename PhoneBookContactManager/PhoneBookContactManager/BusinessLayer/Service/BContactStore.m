@@ -10,36 +10,22 @@
 
 @implementation BContactStore
 
-- (void)checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nonnull)) callBack {
-    if(callBack == nil)
+- (void)checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nonnull)) callback {
+    if(callback == nil) {
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     [[DContactStore sharedInstance] checkAuthorizeStatus:^(BOOL granted, NSError * _Nonnull error) {
-        callBack(granted,error);
+        callback(granted,error);
     }];
 }
 
-- (void)loadContactWithCallback:(loadBusinessContactCallback) callback {
-    if(callback == nil)
+- (void)loadContactWithCallback:(dictionaryContactCallback) callback {
+    if(callback == nil) {
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
-    dispatch_queue_t testQueue = dispatch_queue_create("from busseness", DISPATCH_QUEUE_CONCURRENT);
-    [[DContactStore sharedInstance] loadContactWithCallback:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
-        if(error){
-            callback(nil,error);
-        }else{
-            NSMutableArray *BContactModelArray = [[NSMutableArray alloc] init];
-            for (DContactDTO * contactDTO in contactDTOArray) {
-                [BContactModelArray addObject:[[BContactModel alloc] initWithDContactDTO: contactDTO]];
-            }
-            
-            callback(BContactModelArray,nil);
-        }
-    } onQueue:testQueue];
-}
-
-- (void)loadContactWithCallback2:(dictionaryContactCallback) callback {
-    if(callback == nil)
-        return;
+    }
     
     dispatch_queue_t businessQueue = dispatch_queue_create("from busseness", DISPATCH_QUEUE_CONCURRENT);
     dispatch_async(businessQueue, ^{
@@ -84,9 +70,12 @@
     });
 }
 
--(void) loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback _Nonnull) callback {
-    if(callback ==nil || identifier == nil)
+- (void)loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback _Nonnull) callback {
+    if(identifier == nil || callback == nil) {
+        NSAssert(identifier != nil, @"Param 'identifier' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     [[DContactStore sharedInstance] loadImageForIdentifier:identifier withCallback:^(NSData * _Nullable image, NSError * _Nullable error) {
         callback(image,error);
@@ -94,8 +83,11 @@
 }
 
 - (void)deleteContactForIdentifier:(NSString *)identifier withCallback:(nonnull writeContactCallback) callback {
-    if(callback ==nil)
+    if(identifier == nil || callback == nil) {
+        NSAssert(identifier != nil, @"Param 'identifier' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
 
     [[DContactStore sharedInstance] deleteContactForIdentifier:identifier withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
         callback(error,identifier);
@@ -103,8 +95,11 @@
 }
 
 - (void)addNewContact:(BContactModel *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
-    if(contact == nil || callback == nil)
+    if(contact == nil || callback == nil) {
+        NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // convert to DcontactDTO
@@ -117,8 +112,11 @@
 }
 
 - (void)updateContact:(BContactModel *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
-    if(contact == nil || callback == nil)
+    if(contact == nil || callback == nil) {
+        NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     DContactDTO *updateContact = [self convertBcontactToDcontactDTO:contact];
     [[DContactStore sharedInstance] updateContact:updateContact :image withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
@@ -126,9 +124,11 @@
     }];
 }
 
--(DContactDTO*) convertBcontactToDcontactDTO:(BContactModel*) contact{
-    if(contact == nil)
+- (DContactDTO*)convertBcontactToDcontactDTO:(BContactModel*) contact{
+    if(contact == nil) {
+        NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         return nil;
+    }
     
     DContactDTO *newContact = [DContactDTO new];
     newContact.identifier = contact.identifier;

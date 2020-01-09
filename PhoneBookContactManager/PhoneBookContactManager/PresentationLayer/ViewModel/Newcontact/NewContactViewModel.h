@@ -15,11 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol NewContactObserver <NSObject>
 
--(void) onAddNewContactSuccess:(NSString *) identifier;
--(void) onAddNewContactFail;
+- (void)onAddNewContactSuccess:(NSString *) identifier;
+- (void)onAddNewContactFail;
 
--(void) onUpdateContactSuccess:(NSString *) identifier;
--(void) onUpdateContactFail;
+- (void)onUpdateContactSuccess:(NSString *) identifier;
+- (void)onUpdateContactFail;
 
 @end
 
@@ -27,9 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (weak,nonatomic) id<NewContactObserver> delegate;
 
--(void) addNewContact:(ContactModel *_Nonnull) model :(NSData*) imageData;
+- (void)addNewContact:(ContactModel *_Nonnull) model :(NSData*) imageData;
 
--(void) updateContact:(ContactModel *_Nonnull) model :(NSData*) imageData;
+- (void)updateContact:(ContactModel *_Nonnull) model :(NSData*) imageData;
 @end
 
 NS_ASSUME_NONNULL_END

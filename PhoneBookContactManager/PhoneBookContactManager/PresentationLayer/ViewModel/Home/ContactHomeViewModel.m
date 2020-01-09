@@ -21,8 +21,7 @@
 
 @implementation ContactHomeViewModel
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         self.contactDictionary = [[NSMutableDictionary alloc] init];
@@ -36,7 +35,7 @@
     return self;
 }
 
--(void) requestPermision{
+- (void)requestPermision {
     [self.contactStore checkAuthorizeStatus:^(BOOL granted, NSError * _Nonnull error) {
         if(granted == NO){
             NSLog(@"dont have permisson");
@@ -51,14 +50,14 @@
     }];
 }
 
-- (void)loadContactFromBussinessLayer{
+- (void)loadContactFromBussinessLayer {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [self.contactStore loadContactWithCallback2:^(NSMutableDictionary * _Nullable dicContacts, NSMutableArray * _Nullable sections, NSError * _Nullable error) {
-            if(error){
+        [self.contactStore loadContactWithCallback:^(NSMutableDictionary * _Nullable dicContacts, NSMutableArray * _Nullable sections, NSError * _Nullable error) {
+            if(error) {
                 if([self.delegate respondsToSelector:@selector(showFailToLoadContact)])
                     [self.delegate showFailToLoadContact];
-            }else {
+            } else {
                 //clear exists contact
                 [self.contactDictionary removeAllObjects];
                 [self.sessitonArray removeAllObjects];
@@ -79,24 +78,23 @@
     self.isNeedReload = NO;
 }
 
--(void)searchWithString:(NSString *)keyToSearch{
+-(void)searchWithString:(NSString *)keyToSearch {
     dispatch_async(self.serialSearchQueue, ^{
-        if(keyToSearch.length == 0){
+        if(keyToSearch.length == 0) {
             self.isSearching = NO;
             
             if(self.isNeedReload)
                 [self loadContactFromBussinessLayer];
-        }else {
+        } else {
             self.isSearching = YES;
             [self.contactSearchArray removeAllObjects];
             
             //search in dictionary
             for (NSMutableArray* session in self.contactDictionary.allValues) {
                 for (ContactModel *model in session) {
-                    if([model.fullName respondsToSelector:@selector(rangeOfString:)])
-                    {
+                    if([model.fullName respondsToSelector:@selector(rangeOfString:)]) {
                         NSRange nameRange =[model.fullName rangeOfString:keyToSearch options:NSCaseInsensitiveSearch];
-                        if(nameRange.location != NSNotFound){
+                        if(nameRange.location != NSNotFound) {
                             [self.contactSearchArray addObject:model];
                         }
                     }
@@ -112,71 +110,69 @@
 }
 
 //get method
-- (NSString *)getTitleForHeaderInSection:(NSInteger)session{
+- (NSString *)getTitleForHeaderInSection:(NSInteger)session {
     
     if(self.isSearching)
         return @"Search result";
 
-    if(session >= [self.sessitonArray count])
-    {
-        NSLog(@"can't get session out of bound");
+    if(session >= [self.sessitonArray count]) {
+        NSAssert(session < [self.sessitonArray count], @"Param 'section' out of bound.");
         return @"";
     }
+    
     return [self.sessitonArray objectAtIndex:session];
 }
 
-- (NSInteger)getNumberOfSection{
+- (NSInteger)getNumberOfSection {
     if(self.isSearching)
         return 1;
     
     return [self.sessitonArray count];
 }
 
-- (NSInteger)getNumberOfRowInSection:(NSInteger)section{
+- (NSInteger)getNumberOfRowInSection:(NSInteger)section {
     
     if(self.isSearching)
         return [self.contactSearchArray count];
     
-    if(section >= [self.sessitonArray count])
-    {
-        NSLog(@"can't get number rows of this session: %ld", section);
+    if(section >= [self.sessitonArray count]) {
+        NSAssert(section < [self.sessitonArray count], @"Param 'section' out of bound.");
         return 0;
     }
+    
     return [[self.contactDictionary objectForKey:[self.sessitonArray objectAtIndex:section]] count];
 }
 
-- (ContactModel *)getModel:(NSInteger)section :(NSInteger)row{
+- (ContactModel *)getModel:(NSInteger)section :(NSInteger)row {
     
     if([self isInValidSection:section andRow:row])
         return nil;
    
     if(self.isSearching)
         return [self.contactSearchArray objectAtIndex:row];
-    else
-    {
+    else {
         NSString * sesctionKey = [self.sessitonArray objectAtIndex:section];
         return [[self.contactDictionary objectForKey:sesctionKey] objectAtIndex:row];
     }
 }
 
-- (void)removeCellAt:(NSInteger)section andRow:(NSInteger)row{
+- (void)removeCellAt:(NSInteger)section andRow:(NSInteger)row {
     
     if([self isInValidSection:section andRow:row])
         return;
     
-    if(self.isSearching == NO)
-    {
+    if(self.isSearching == NO) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSString * sectionKey = [self.sessitonArray objectAtIndex:section];
             ContactModel *contactNeedDelete = [[self.contactDictionary objectForKey:sectionKey] objectAtIndex:row];
             [self.contactStore deleteContactForIdentifier:contactNeedDelete.identifier withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
-                if(error){
+                if(error) {
                     //show err on UI
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if([self.delegate respondsToSelector:@selector(deleteContactFail)])
                             [self.delegate deleteContactFail];
                     });
-                }else{
+                } else {
                     //delete from data source
                     [[self.contactDictionary objectForKey:sectionKey] removeObjectAtIndex:row];
                     //update in fo on UI
@@ -190,27 +186,24 @@
                 }
             }];
         });
-    }else
-    {
+    } else
         [self removeCellInSearchMode:section andRow:row];
-    }
 }
 
--(void) removeCellInSearchMode:(NSInteger)section andRow:(NSInteger)row{
+-(void) removeCellInSearchMode:(NSInteger)section andRow:(NSInteger)row {
     if([self isInValidSection:section andRow:row])
         return;
     //delete in device
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         ContactModel *contactNeedDelete = [self.contactSearchArray objectAtIndex:row];
         [self.contactStore deleteContactForIdentifier:contactNeedDelete.identifier withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
-            if(error){
+            if(error) {
                 //show err on UI
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(deleteContactFail)])
                         [self.delegate deleteContactFail];
                 });
-            }
-            else{
+            } else {
                 //delete in searching list
                 [self.contactSearchArray removeObjectAtIndex:row];
                 
@@ -225,20 +218,17 @@
                 ContactModel *ct;
                 for (int i=0; i<[[self.contactDictionary objectForKey:sectionName] count]; i++) {
                     ct = [[self.contactDictionary objectForKey:sectionName] objectAtIndex:i];
-                    if([ct.identifier isEqualToString:contactNeedDelete.identifier])
-                    {
+                    if([ct.identifier isEqualToString:contactNeedDelete.identifier]) {
                         [[self.contactDictionary objectForKey:sectionName] removeObjectAtIndex:i];
                         break;
                     }
                 }
                 
                 //if don't have any cell in this section -> delete section in data source (dic +keyArr)
-                if([[self.contactDictionary objectForKey:sectionName] count] == 0)
-                {
+                if([[self.contactDictionary objectForKey:sectionName] count] == 0) {
                     [self.contactDictionary removeObjectForKey:sectionName];
                     for (NSString *section in self.sessitonArray) {
-                        if([section isEqualToString:sectionName])
-                        {
+                        if([section isEqualToString:sectionName]) {
                             [self.sessitonArray removeObject:section];
                             break;
                         }
@@ -247,8 +237,7 @@
                 
                 //update info on UI
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)])
-                    {
+                    if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)]) {
                         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
                         [self.delegate deleteContactSuccess:indexPath removeSection:NO];
                     }
@@ -258,62 +247,56 @@
     });
 }
 
-- (void)removeSection:(NSInteger)section{
-    if(section >= [self.sessitonArray count])
-        return;
+- (void)removeSection:(NSInteger)section {
+    if(section >= [self.sessitonArray count]) {
+        NSAssert(section < [self.sessitonArray count], @"Param 'section' out of bound. Section = %ld", section);
+        return ;
+    }
     
-    if(self.isSearching == NO)
-    {
+    if(self.isSearching == NO) {
         NSString * sectionKey = [self.sessitonArray objectAtIndex:section];
         
         //if just have 1 cell in this session
-        if([[self.contactDictionary objectForKey:sectionKey] count] == 1)
-        {
+        if([[self.contactDictionary objectForKey:sectionKey] count] == 1) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSString * sectionKey = [self.sessitonArray objectAtIndex:section];
                 ContactModel *contactNeedDelete = [[self.contactDictionary objectForKey:sectionKey] objectAtIndex:0];
                 [self.contactStore deleteContactForIdentifier:contactNeedDelete.identifier withCallback:^(NSError * _Nullable error, NSString *identifier) {
-                    if(error){
+                    if(error) {
                         //show err on UI
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if([self.delegate respondsToSelector:@selector(deleteContactFail)])
                                 [self.delegate deleteContactFail];
                         });
-                    }else{
+                    } else {
                         //delete from data source
                         [[self.contactDictionary objectForKey:sectionKey] removeAllObjects];
                         [self.contactDictionary removeObjectForKey:sectionKey];
                         [self.sessitonArray removeObjectAtIndex:section];
                         //update in fo on UI
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)])
-                            {
+                            if([self.delegate respondsToSelector:@selector(deleteContactSuccess:removeSection:)]) {
                                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
                                 [self.delegate deleteContactSuccess:indexPath removeSection:YES];
                             }
                         });
                     }
-                    
                 }];
             });
-        }
-        else
+        } else
             NSLog(@"can't remove session when contain multi cells");
-    }
-    else
-    {
+    } else {
         //delete in search mode : just have only 1 section and 1 row
         [self removeCellInSearchMode:0 andRow:0];
     }
 }
 
-- (void)addNewContact:(EditingContactModel *)editContactModel{
+- (void)addNewContact:(EditingContactModel *)editContactModel {
     if(editContactModel == nil)
         return;
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        ContactModel *model = [[ContactModel alloc] initWithContactModel: editContactModel.contactModel];
-        
+        ContactModel *model = editContactModel.contactModel;
         NSString *sessionName;
         if([[model avatarName] length] == 1)
             sessionName = [model avatarName];
@@ -321,7 +304,7 @@
             sessionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
         
         //add session
-        if([self.contactDictionary objectForKey:sessionName] == nil){
+        if([self.contactDictionary objectForKey:sessionName] == nil) {
             //add new session if not exists
             NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
             [contactSessionArray addObject:model];
@@ -330,7 +313,7 @@
             //re sort A->Z session
             NSMutableArray *tempArray = [[NSMutableArray alloc] initWithArray:[self.contactDictionary allKeys]];
             self.sessitonArray = [[NSMutableArray alloc] initWithArray:[tempArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
-        }else
+        } else
             [[self.contactDictionary objectForKey:sessionName] addObject:model];
         
         if([self.delegate respondsToSelector:@selector(loadDataComplete)])
@@ -343,15 +326,16 @@
     
 }
 
-- (void)editContact:(EditingContactModel *)editContactModel{
-    if(editContactModel == nil)
+- (void)editContact:(EditingContactModel *)editContactModel {
+    if(editContactModel == nil) {
+        NSAssert(editContactModel != nil, @"Param 'editContactModel' should be nonnull.");
         return;
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        ContactModel *model = [[ContactModel alloc] initWithContactModel: editContactModel.contactModel];
-        if(self.isSearching == NO)
-        {
+        ContactModel *model = editContactModel.contactModel;
+        if(self.isSearching == NO) {
             if([self isInValidSection:editContactModel.indexPath.section andRow:editContactModel.indexPath.row])
                 return;
             
@@ -369,7 +353,7 @@
                 //resort section
                 self.sessitonArray = [[NSMutableArray alloc] initWithArray:[self.sessitonArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
             }
-        }else {
+        } else {
                //update model after searching
                //update model searching
                for (ContactModel *m in self.contactSearchArray) {
@@ -387,26 +371,6 @@
             
             //update model in dictionary
             self.isNeedReload =YES;
-               //get contact in this section
-//               NSString *sectionName;
-//               if([[model avatarName] length] == 1)
-//                   sectionName = [model avatarName];
-//               else
-//                   sectionName = [[model avatarName] substringWithRange:NSMakeRange(1, 1)];
-//
-//               for (ContactModel *mDic in [self.contactDictionary objectForKey:sectionName]) {
-//                   if([mDic.identifier isEqualToString:model.identifier])
-//                   {
-//                       mDic.avatarName = model.avatarName;
-//                       mDic.fullName   = model.fullName;
-//                       mDic.givenName  = model.givenName;
-//                       mDic.middleName = model.middleName;
-//                       mDic.familyName = model.familyName;
-//                       mDic.phoneNumberArray = model.phoneNumberArray;
-//                       break;
-//                   }
-//               }
-           
        }
         
         if([self.delegate respondsToSelector:@selector(loadDataComplete)])
@@ -418,16 +382,15 @@
     });
 }
 
--(void) moveContactToOtherSection:(ContactModel *_Nonnull)model index:(NSIndexPath *_Nonnull)indexPath oldSection:(NSString *_Nonnull) oldSectionName newSection:(NSString*_Nonnull) newSectionName{
+- (void)moveContactToOtherSection:(ContactModel *_Nonnull)model index:(NSIndexPath *_Nonnull)indexPath oldSection:(NSString *_Nonnull) oldSectionName newSection:(NSString*_Nonnull) newSectionName {
     //contact will be move to other section
     [[self.contactDictionary objectForKey:oldSectionName] removeObjectAtIndex:indexPath.row];
-    if([[self.contactDictionary objectForKey:oldSectionName] count] == 0)
-    {
+    if([[self.contactDictionary objectForKey:oldSectionName] count] == 0) {
         [self.contactDictionary removeObjectForKey:oldSectionName];
         [self.sessitonArray removeObjectAtIndex:indexPath.section];
     }
     
-    if([self.contactDictionary objectForKey:newSectionName] == nil){
+    if([self.contactDictionary objectForKey:newSectionName] == nil) {
         NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
         [contactSessionArray addObject:model];
         [self.contactDictionary setObject:contactSessionArray forKey:newSectionName];
@@ -437,27 +400,22 @@
         [[self.contactDictionary objectForKey:newSectionName] addObject:model];
 }
 
--(BOOL) isInValidSection:(NSInteger)section andRow:(NSInteger)row{
-    if(!self.isSearching)
-    {
-        if(section>= [self.sessitonArray count])
-        {
-            NSLog(@"session out of bound %ld", section);
+- (BOOL)isInValidSection:(NSInteger)section andRow:(NSInteger)row {
+    if(!self.isSearching) {
+        if(section >= [self.sessitonArray count]) {
+            NSAssert(section < [self.sessitonArray count], @"Param 'section' out of bound. Section = %ld", section);
             return YES;
         }
         
         NSString * sessionKey = [self.sessitonArray objectAtIndex:section];
-        if([[self.contactDictionary objectForKey:sessionKey] count]<= row)
-        {
-            NSLog(@"row out of boud - sesson:%ld - row: %ld", section,row);
+        if([[self.contactDictionary objectForKey:sessionKey] count]<= row) {
+            NSAssert(row < [[self.contactDictionary objectForKey:sessionKey] count], @"Param 'row' out of bound. Row = %ld, Section = %ld", row, section);
             return YES;
         }
-    }
-    else{
+    } else {
         //in searching mode
-        if([self.contactSearchArray count] <= row)
-        {
-            NSLog(@"row out of bound  - row: %ld", row);
+        if([self.contactSearchArray count] <= row) {
+            NSAssert(row < [self.contactSearchArray count], @"Param 'row' out of bound. Row = %ld", row);
             return YES;
         }
     }

@@ -28,29 +28,29 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ContactHomeViewModel : NSObject
 @property (weak,nonatomic) id<CHViewModelObserver> delegate;
 
-- (instancetype) init;
+- (instancetype)init;
 
--(void) requestPermision;
+- (void)requestPermision;
 
--(void) loadContactFromBussinessLayer;
+- (void)loadContactFromBussinessLayer;
 
--(void) searchWithString:(NSString*) keyToSearch;
+- (void)searchWithString:(NSString*) keyToSearch;
 
--(NSString *) getTitleForHeaderInSection: (NSInteger) section;
+- (NSString *)getTitleForHeaderInSection: (NSInteger) section;
 
--(NSInteger) getNumberOfSection;
+- (NSInteger)getNumberOfSection;
 
--(NSInteger) getNumberOfRowInSection:(NSInteger) section;
+- (NSInteger)getNumberOfRowInSection:(NSInteger) section;
 
--(ContactModel*) getModel:(NSInteger) section :(NSInteger) row;
+- (ContactModel*)getModel:(NSInteger) section :(NSInteger) row;
 
--(void) removeCellAt:(NSInteger) section andRow:(NSInteger) row;
+- (void)removeCellAt:(NSInteger) section andRow:(NSInteger) row;
 
--(void) removeSection:(NSInteger) section;
+- (void)removeSection:(NSInteger) section;
 
--(void) addNewContact:(EditingContactModel*) editContactModel;
+- (void)addNewContact:(EditingContactModel*) editContactModel;
 
--(void) editContact:(EditingContactModel*) editContactModel;
+- (void)editContact:(EditingContactModel*) editContactModel;
 @end
 
 NS_ASSUME_NONNULL_END

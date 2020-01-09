@@ -10,15 +10,14 @@
 
 @implementation BContactModel
 
-- (instancetype)initWithDContactDTO:(DContactDTO *)contactDTO{
-    if(contactDTO==nil)
-    {
+- (instancetype)initWithDContactDTO:(DContactDTO *)contactDTO {
+    if(contactDTO==nil) {
         NSLog(@"contactDTO is nil");
         return nil;
     }
     
     self=[super init];
-    if(self){
+    if(self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
         _identifier = [contactDTO identifier];
@@ -31,7 +30,7 @@
         NSString *lastName   = (contactDTO.familyName != nil)? contactDTO.familyName : @"";
         _fullName   = [NSString stringWithFormat:@"%@ %@ %@",firstName,secondName,lastName];
         
-        if([[contactDTO phoneNumberArray] count]>0){
+        if([[contactDTO phoneNumberArray] count]>0) {
             if([self.fullName isEqualToString:@"  "])
                 self.fullName = [[contactDTO phoneNumberArray] objectAtIndex:0];
 
@@ -47,8 +46,7 @@
     return self;
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
     return [NSString stringWithFormat:@"%@", self.fullName];
 }
 @end

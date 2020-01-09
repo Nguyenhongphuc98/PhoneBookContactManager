@@ -10,7 +10,7 @@
 
 @implementation DContactStore
 
-+(instancetype) sharedInstance {
++ (instancetype)sharedInstance {
     static DContactStore *sharedInstance;
     static dispatch_once_t onceToken;
     
@@ -21,7 +21,7 @@
     return sharedInstance;
 }
 
--(instancetype) init {
+- (instancetype)init {
     self=[super init];
     
     if(self){
@@ -36,7 +36,11 @@
     return self;
 }
 
--(void) checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nullable)) callback {
+- (void)checkAuthorizeStatus:(void (^)(BOOL, NSError * _Nullable)) callback {
+    if(callback == nil) {
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
+        return;
+    }
     
     CNEntityType entityType = CNEntityTypeContacts;
     CNAuthorizationStatus authorizationStatus=[CNContactStore authorizationStatusForEntityType:entityType];
@@ -77,11 +81,11 @@
     }
 }
 
--(void) loadContactWithCallback:(loadContactCallback)callback onQueue:(dispatch_queue_t) callbackQueue {
+- (void)loadContactWithCallback:(loadContactCallback)callback onQueue:(dispatch_queue_t) callbackQueue {
     
     //block nil can make crash app
     if(callback == nil) {
-        
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
     }
     
@@ -90,7 +94,7 @@
         //add block to array to transfer later
         if(callbackQueue == nil){
             [self.loadContactCallbackArray addObject:callback];
-        }else {
+        } else {
             //check cb queue exists
             NSString *queueName = [[NSString alloc] initWithFormat: @"%s", dispatch_queue_get_label(callbackQueue)];
             if([self.callbackQueueArray containsObject:callbackQueue]){
@@ -144,7 +148,7 @@
     });
 }
 
--(void) responseContactForCallback:(NSError * _Nullable)error contactDTOArray:(NSMutableArray * _Nullable) contacts {
+- (void)responseContactForCallback:(NSError * _Nullable)error contactDTOArray:(NSMutableArray * _Nullable) contacts {
     
     //transfer on one queue (serial task queue) with addblock to make sure no block added when transfering
     dispatch_async(self.serialTaskQueue, ^{
@@ -161,7 +165,7 @@
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                     callback(contactForTransferArray,error);
                 });
-            }else
+            } else
                 NSLog(@"callback == nill");
         }
         
@@ -171,11 +175,11 @@
             NSMutableArray *cbArray = [self.callbackDictionary objectForKey:queueName];
             
             for (loadContactCallback callback in cbArray) {
-                if(callback!=nil){
+                if(callback!=nil) {
                     dispatch_async(queue, ^{
                         callback(contactForTransferArray,error);
                     });
-                }else
+                } else
                     NSLog(@"callback == nill");
             }
         }
@@ -190,8 +194,11 @@
 
 - (void)loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback _Nonnull)callback {
     
-    if(callback == nil || identifier == nil)
+    if(callback == nil || identifier == nil) {
+        NSAssert(identifier != nil, @"Param 'identifier' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     // allow multi read
     dispatch_async(self.concurentReadWriteQueue, ^{
@@ -199,17 +206,20 @@
         NSError *loadImageError;
         
         CNContact *contact = [contactStore unifiedContactWithIdentifier:identifier keysToFetch:@[CNContactImageDataKey] error:&loadImageError];
-        if(loadImageError){
+        if(loadImageError) {
             callback(nil,loadImageError);
-        }else
+        } else
             callback([contact imageData],nil);
     });
 }
 
 //write method ===================================================
 - (void)deleteContactForIdentifier:(NSString *)identifier  withCallback:(nonnull writeContactCallback) callback {
-    if(identifier==nil || callback == nil)
+    if(callback == nil || identifier == nil) {
+        NSAssert(identifier != nil, @"Param 'identifier' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     dispatch_async(self.concurentReadWriteQueue, ^{
         CNContactStore *contactStore = [CNContactStore new];
@@ -235,8 +245,11 @@
 
 - (void)addNewContact:(DContactDTO *)contact :(NSData*) image withCallback:(nonnull writeContactCallback) callback {
     
-    if(contact == nil || callback == nil)
+    if(contact == nil || callback == nil) {
+        NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     dispatch_async(self.concurentReadWriteQueue, ^{
         CNContactStore *contactStore = [CNContactStore new];
@@ -266,15 +279,18 @@
                     callback(nil,[newContact identifier]);
                 else
                     callback(nil,nil);
-            }else
+            } else
                 callback(addcontactError,nil);
             });
     });
 }
 
 - (void)updateContact:(DContactDTO *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
-    if(contact == nil || callback == nil)
+    if(contact == nil || callback == nil) {
+        NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
+        NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
+    }
     
     dispatch_barrier_sync(self.concurentReadWriteQueue, ^{
         CNContactStore *contactStore = [CNContactStore new];
@@ -290,8 +306,7 @@
         CNContact *cnContact = [contactStore unifiedContactWithIdentifier:contact.identifier keysToFetch:keysToFetch error:&updateError];
         if(updateError){
             callback(updateError,nil);
-        }else
-        {
+        } else {
             CNMutableContact *newContact = [cnContact mutableCopy];
             newContact.givenName = contact.givenName;
             newContact.middleName = contact.middleName;
@@ -314,14 +329,15 @@
                 else
                     callback(updateError,nil);
             });
-            
         }
     });
 }
 
--(NSMutableArray*) genratePhoneNumberArray:(DContactDTO *) contact{
-    if(contact == nil)
+- (NSMutableArray*)genratePhoneNumberArray:(DContactDTO *) contact{
+    if(contact == nil) {
+        NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         return nil;
+    }
     
     CNLabeledValue *homePhone;
     CNLabeledValue *workPhone;

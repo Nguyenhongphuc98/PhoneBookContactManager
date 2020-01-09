@@ -21,9 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *fullName;
 @property NSMutableArray *phoneNumberArray;
 
--(instancetype) initWithBusinessContact: (BContactModel*) contactModel;
--(instancetype) initWithContactModel: (ContactModel*) contactModel;
--(NSString*) description;
+- (instancetype)initWithBusinessContact: (BContactModel*) contactModel;
+- (instancetype)initWithContactModel: (ContactModel*) contactModel;
+- (NSString*)description;
 @end
 
 NS_ASSUME_NONNULL_END

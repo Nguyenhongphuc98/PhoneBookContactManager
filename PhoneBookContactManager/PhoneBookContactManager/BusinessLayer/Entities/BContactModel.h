@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *fullName;
 @property NSMutableArray *phoneNumberArray;
 
--(instancetype) initWithDContactDTO: (DContactDTO*) contactDTO;
--(NSString*) description;
+- (instancetype)initWithDContactDTO: (DContactDTO*) contactDTO;
+- (NSString*)description;
 
 @end
 

@@ -10,15 +10,14 @@
 
 @implementation ContactModel
 
-- (instancetype)initWithBusinessContact:(BContactModel *)contactModel{
-    if(contactModel==nil)
-    {
-        NSLog(@"contactModel is nil");
+- (instancetype)initWithBusinessContact:(BContactModel *)contactModel {
+    if(contactModel == nil) {
+        NSAssert(contactModel != nil, @"Param 'contactModel' should be nonnull");
         return nil;
     }
     
     self=[super init];
-    if(self){
+    if(self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
         _identifier = [contactModel identifier];
@@ -29,7 +28,7 @@
         _avatarName = [self generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
-        if([[contactModel phoneNumberArray] count]>0){
+        if([[contactModel phoneNumberArray] count]>0) {
             for (NSString *number in [contactModel phoneNumberArray]) {
                 [_phoneNumberArray addObject:[number copy]];
             }
@@ -39,15 +38,14 @@
     return self;
 }
 
-- (instancetype)initWithContactModel:(ContactModel *)contactModel{
-    if(contactModel==nil)
-    {
-        NSLog(@"contactModel is nil");
+- (instancetype)initWithContactModel:(ContactModel *)contactModel {
+    if(contactModel == nil) {
+        NSAssert(contactModel != nil, @"Param 'contactModel' should be nonnull");
         return nil;
     }
     
     self=[super init];
-    if(self){
+    if(self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
         _identifier = [contactModel identifier];
@@ -60,7 +58,7 @@
         _avatarName = [self generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
-        if([[contactModel phoneNumberArray] count]>0){
+        if([[contactModel phoneNumberArray] count]>0) {
             if([self.fullName isEqualToString:@"  "])
                 self.fullName = [[contactModel phoneNumberArray] objectAtIndex:0];
             
@@ -76,7 +74,7 @@
     return self;
 }
 
-- (NSString *) generateAvatarName: (NSString *) firstName :(NSString*) lastName{
+- (NSString *)generateAvatarName: (NSString *) firstName :(NSString*) lastName {
     NSString *first = (firstName == nil)? @"" : firstName;
     NSString *last  = (lastName == nil)? @"" : lastName;
     
@@ -92,8 +90,7 @@
     return @"*";
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
     return [NSString stringWithFormat:@"%@", self.fullName];
 }
 
