@@ -1,19 +1,19 @@
 //
-//  HomeContactViewController.h
+//  ShowContactsVC.h
 //  PhoneBookContactManager
 //
-//  Created by CPU11716 on 12/23/19.
-//  Copyright © 2019 CPU11716. All rights reserved.
+//  Created by CPU11716 on 1/10/20.
+//  Copyright © 2020 CPU11716. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import "ContactTableView.h"
 #import "ContactHomeViewModel.h"
 #import "NewContactViewController.h"
-#import "ContactTableViewCell.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HomeContactViewController : UIViewController <UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate,CHViewModelObserver>
+@interface HomeContactViewController : UIViewController <ContactTableViewDatasource, contactTableViewDelegate, CHViewModelObserver, UISearchBarDelegate>
 
 @end
 

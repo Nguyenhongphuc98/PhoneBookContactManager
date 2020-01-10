@@ -31,7 +31,7 @@
     dispatch_async(businessQueue, ^{
         [[DContactStore sharedInstance] loadContactWithCallback:^(NSMutableArray * _Nullable contactDTOArray, NSError * _Nullable error) {
             if(error) {
-                callback(nil,nil,error);
+                callback(nil, error);
             } else {
                 NSMutableArray *BContactModelArray = [[NSMutableArray alloc] init];
                 for (DContactDTO * contactDTO in contactDTOArray) {
@@ -40,7 +40,6 @@
                 
                 //add contact to dictionary
                 NSMutableDictionary *contactDictionary = [NSMutableDictionary new];
-                NSMutableArray *sectitonArray = [NSMutableArray new];
                 
                 for (BContactModel *contact in BContactModelArray) {
                     ContactModel *model = [[ContactModel alloc] initWithBusinessContact:contact];
@@ -60,18 +59,14 @@
                         [[contactDictionary objectForKey:sessionName] addObject:model];
                 }
                 
-                //sort A->Z
-                NSMutableArray *tempArray = [[NSMutableArray alloc] initWithArray:[contactDictionary allKeys]];
-                sectitonArray = [[NSMutableArray alloc] initWithArray:[tempArray sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
-                
-                callback(contactDictionary,sectitonArray,nil);
+                callback(contactDictionary, nil);
             }
         } onQueue:businessQueue];
     });
 }
 
 - (void)loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback _Nonnull) callback {
-    if(identifier == nil || callback == nil) {
+    if (identifier == nil || callback == nil) {
         NSAssert(identifier != nil, @"Param 'identifier' should be a nonnull value.");
         NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
@@ -83,7 +78,7 @@
 }
 
 - (void)deleteContactForIdentifier:(NSString *)identifier withCallback:(nonnull writeContactCallback) callback {
-    if(identifier == nil || callback == nil) {
+    if (identifier == nil || callback == nil) {
         NSAssert(identifier != nil, @"Param 'identifier' should be a nonnull value.");
         NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
@@ -95,7 +90,7 @@
 }
 
 - (void)addNewContact:(BContactModel *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
-    if(contact == nil || callback == nil) {
+    if (contact == nil || callback == nil) {
         NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
@@ -112,7 +107,7 @@
 }
 
 - (void)updateContact:(BContactModel *)contact :(NSData *)image withCallback:(nonnull writeContactCallback) callback {
-    if(contact == nil || callback == nil) {
+    if (contact == nil || callback == nil) {
         NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         NSAssert(callback != nil, @"Param 'callback' should be a nonnull value.");
         return;
@@ -125,7 +120,7 @@
 }
 
 - (DContactDTO*)convertBcontactToDcontactDTO:(BContactModel*)contact {
-    if(contact == nil) {
+    if (contact == nil) {
         NSAssert(contact != nil, @"Param 'contact' should be a nonnull value.");
         return nil;
     }

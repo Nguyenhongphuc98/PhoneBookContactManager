@@ -9,7 +9,6 @@
 #import "NewContactViewController.h"
 
 @interface NewContactViewController ()
-@property (weak, nonatomic) IBOutlet UIButton *btnSaveContact;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImage;
 @property (weak, nonatomic) IBOutlet UIButton *btnAddPhone;
 @property (weak, nonatomic) IBOutlet UITextField *textFieldHomePhone;
@@ -20,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnAddPhoto;
 @property (weak, nonatomic) IBOutlet UILabel *lbHome;
 @property (weak, nonatomic) IBOutlet UILabel *lbWork;
+@property (nonatomic) UIButton *saveButton;
 
 @property UIImagePickerController *imagePicker;
 
@@ -48,6 +48,17 @@
     
     self.viewModel = [NewContactViewModel new];
     self.viewModel.delegate = self;
+    
+    self.saveButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 48, 30)];
+    [self.saveButton setTitle:@"save" forState:UIControlStateNormal];
+    [self.saveButton setTitleColor:self.btnAddPhone.titleLabel.tintColor forState:UIControlStateNormal];
+    [self.saveButton setTitleColor:UIColor.brownColor forState:UIControlStateHighlighted];
+    [self.saveButton setTitleColor:UIColor.grayColor forState:UIControlStateDisabled];
+    [self.saveButton addTarget:self action:@selector(saveClick) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.saveButton];
+    
+    self.navigationItem.rightBarButtonItem = barButtonItem;
+    [self.view addSubview:self.saveButton];
 
     switch (self.editContactModel.action) {
         case AddNewContact:
@@ -64,8 +75,8 @@
 }
 
 - (void)setUpAddNewContact {
-    [self.btnSaveContact setTitle:@"Save" forState:UIControlStateNormal];
-    [self.btnSaveContact setEnabled:NO];
+    [self.saveButton setTitle:@"Save" forState:UIControlStateNormal];
+    [self.saveButton setEnabled:NO];
     self.textFieldHomePhone.hidden = YES;
     self.textFieldWorkPhone.hidden = YES;
     self.lbHome.hidden = YES;
@@ -73,7 +84,7 @@
 }
 
 - (void)setUpViewDetail {
-    [self.btnSaveContact setTitle:@"Edit" forState:UIControlStateNormal];
+    [self.saveButton setTitle:@"Edit" forState:UIControlStateNormal];
     
     if(self.editContactModel.contactModel != nil) {
         self.tfFirstName.userInteractionEnabled = NO;
@@ -135,7 +146,7 @@
     [self presentViewController:self.imagePicker animated:YES completion:nil];
 }
 
-- (IBAction)saveClick:(id)sender {
+- (void)saveClick {
     switch (self.editContactModel.action) {
         case AddNewContact:
             [self saveNewContactToDevice];
@@ -190,13 +201,13 @@
 
 - (void)prepareForEditcontact {
     self.editContactModel.action = EditContact;
-    [self.btnSaveContact setTitle:@"Save" forState:UIControlStateNormal];
+    [self.saveButton setTitle:@"Save" forState:UIControlStateNormal];
     
     self.tfFirstName.userInteractionEnabled = YES;
     self.tfMiddleName.userInteractionEnabled = YES;
     self.tfLastName.userInteractionEnabled = YES;
     self.btnAddPhoto.hidden = NO;
-    [self.btnAddPhoto setTitle:@"Change" forState:UIControlStateNormal];
+    [self.btnAddPhoto setTitle:@"Edit" forState:UIControlStateNormal];
     self.btnAddPhone.hidden = NO;
 }
 
@@ -224,23 +235,32 @@
         if(![workPhone isEqualToString:@""])
             [phoneArray addObject:workPhone];
         
-        ContactModel *newContact = [ContactModel new];
-        newContact.identifier = self.editContactModel.contactModel.identifier;
+        //ContactModel *newContact = [ContactModel new];
+        ContactModel *newContact = self.editContactModel.contactModel;
+        //newContact.identifier = self.editContactModel.contactModel.identifier;
         newContact.givenName = firstName;
         newContact.middleName = secondName;
         newContact.familyName = lastName;
         newContact.phoneNumberArray = phoneArray;
         
-        self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
+        newContact.fullName   = [NSString stringWithFormat:@"%@ %@ %@",newContact.givenName,newContact.middleName,newContact.familyName];
+        
+        
+        newContact.avatarName = [ContactModel generateAvatarName:newContact.givenName :newContact.familyName];
+        newContact.avatarName = [newContact.avatarName uppercaseString];
+        if([newContact.fullName isEqualToString:@"  "])
+            newContact.fullName = @"No name";
+        
+        //self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
         [self.viewModel updateContact:self.editContactModel.contactModel :imageData];
     });
 }
 
 - (void)resetSaveButton {
     if([self.tfFirstName.text length] == 0 && [self.tfMiddleName.text length] == 0 &&[self.tfLastName.text length] == 0 && self.isAvatarChange == NO && self.countClickAddPhone == 0)
-        [self.btnSaveContact setEnabled:NO];
+        [self.saveButton setEnabled:NO];
     else
-        [self.btnSaveContact setEnabled:YES];
+        [self.saveButton setEnabled:YES];
 }
 
 // uiimage view controller delegate

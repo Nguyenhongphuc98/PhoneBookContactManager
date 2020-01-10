@@ -1,75 +1,55 @@
 //
-//  HomeContactViewController.m
+//  ShowContactsVC.m
 //  PhoneBookContactManager
 //
-//  Created by CPU11716 on 12/23/19.
-//  Copyright © 2019 CPU11716. All rights reserved.
+//  Created by CPU11716 on 1/10/20.
+//  Copyright © 2020 CPU11716. All rights reserved.
 //
 
 #import "HomeContactViewController.h"
 
 @interface HomeContactViewController ()
-@property (weak, nonatomic) IBOutlet UITableView *contactTableView;
+@property (weak, nonatomic) IBOutlet ContactTableView *contactTableView;
+@property (strong, nonatomic) ContactHomeViewModel *viewModel;
 @property (weak, nonatomic) IBOutlet UISearchBar *contactSearchbar;
 @property (weak, nonatomic) IBOutlet UIStackView *permisionDeniedSV;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *addNewContactButton;
-@property (weak, nonatomic) IBOutlet UIButton *settingsButton;
 
-@property (strong,nonatomic) ContactHomeViewModel* viewModel;
-@property BOOL isContactLoaded;
-
+@property BOOL isContactsLoaded;
 @end
 
 @implementation HomeContactViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     [self setUp];
     //add observer for newcontact viewcontroller
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(processNewContactViewControllerdismis:) name:@"processContactNotify" object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    if(!self.isContactLoaded)
-        [self requestAccessContactInDevice];
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"processContactNotify" object:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (!self.isContactsLoaded) {
+        [self requestAccessContactInDevice];
+    }
+}
+
 - (void)setUp {
-    UINib *nib = [UINib nibWithNibName:@"ContactTableViewCell" bundle:nil];
-    [_contactTableView registerNib:nib forCellReuseIdentifier:@"ContactTableViewCell"];
-    
+    self.isContactsLoaded = NO;
     [self.permisionDeniedSV setHidden:YES];
-    self.isContactLoaded = NO;
-    
-    self.viewModel = [[ContactHomeViewModel alloc] init];
+    self.viewModel = [ContactHomeViewModel new];
     self.viewModel.delegate = self;
+    
+    self.contactTableView.datasource = self;
+    self.contactTableView.delegate = self;
 }
 
 - (void) requestAccessContactInDevice {
     [self.viewModel requestPermision];
-}
-
-- (void)deleteContactAtIndex:(NSIndexPath*)indexPath {
-    //check session
-    if([self.viewModel getNumberOfRowInSection:indexPath.section] == 1 && indexPath.row == 0)
-        [self.viewModel removeSection:indexPath.section];
-    else
-        [self.viewModel removeCellAt:indexPath.section andRow:indexPath.row];
-}
-
-- (void)showAlertActionOkWith:(NSString *_Nonnull)title message:(NSString *_Nonnull)msg {
-    UIAlertController *alertDenied = [UIAlertController alertControllerWithTitle:title
-                                                                         message:msg
-                                                                  preferredStyle:UIAlertControllerStyleAlert];
-    
-    [alertDenied addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-    [self presentViewController:alertDenied animated:YES completion:nil];
 }
 - (IBAction)addNewContact:(id)sender {
     EditingContactModel *editcontactModel = [EditingContactModel new];
@@ -80,10 +60,9 @@
     
     [self.navigationController pushViewController:addContactVC animated:YES];
 }
-
 - (IBAction)onOpenSettings:(id)sender {
     if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:)])
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
 }
 
 - (void)processNewContactViewControllerdismis:(NSNotification*)notification {
@@ -96,7 +75,7 @@
             case AddNewContact:
                 [self.viewModel addNewContact:editContactModel];
                 break;
-            
+                
             case EditContact:
                 [self.viewModel editContact:editContactModel];
                 break;
@@ -107,73 +86,54 @@
     });
 }
 
-//tableview datasource
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return [self.viewModel getTitleForHeaderInSection:section];
+//delegate contacttableView
+- (NSMutableDictionary *)contactModelForContactTableView:(ContactTableView *)contactTableView {
+    return [self.viewModel contactsDictionaryForTableView];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [self.viewModel getNumberOfSection];
+- (void)acceptDeleteTableCellAt:(NSIndexPath *)indexPath withCallback:(nonnull contactTableCallback)callback {
+
+    UIAlertController *alertWarring = [UIAlertController alertControllerWithTitle:@"Delete contact"
+                                                                            message:@"Are you sure to delete this contact"
+                                                                     preferredStyle:UIAlertControllerStyleAlert];
+        
+    UIAlertAction *actionOk = [UIAlertAction actionWithTitle:@"YES"
+                                                    style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction * action){
+                                                        ContactTableCallbackInfor *info = [ContactTableCallbackInfor new];
+                                                        info.code = ACCEPT;
+                                                        callback(info);
+                                                    }];
+    [alertWarring addAction:actionOk];
+        
+    UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"NO"
+                                                            style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action){
+                                                             ContactTableCallbackInfor *info = [ContactTableCallbackInfor new];
+                                                             info.code = DENIED;
+                                                             callback(info);
+                                                         }];
+    [alertWarring addAction:actionCancel];
+        
+    [self presentViewController:alertWarring animated:YES completion:nil];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-   return [self.viewModel getNumberOfRowInSection:section];
+- (void)willRemoveContactFromContactTableView:(ContactModel *)contactModel withCallback:(nonnull contactTableCallback)callback {
+    [self.viewModel removeContactModel:contactModel withCallback:callback];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ContactTableViewCell *cell = (ContactTableViewCell*)[tableView dequeueReusableCellWithIdentifier:@"ContactTableViewCell" forIndexPath:indexPath];
-    [cell fillData:[self.viewModel getModel:indexPath.section :indexPath.row]];
-
-    return cell;
-}
-
-//tableview delegate
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-   if(editingStyle == UITableViewCellEditingStyleDelete) {
-       //ask to delete
-       UIAlertController *alertWarring = [UIAlertController alertControllerWithTitle:@"Delete contact"
-                                                                                message:@"Are you sure to delete this contact"
-                                                                         preferredStyle:UIAlertControllerStyleAlert];
-
-       UIAlertAction *actionOk = [UIAlertAction actionWithTitle:@"YES"
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction * action){
-                                                            [self deleteContactAtIndex:indexPath];
-                                                        }];
-       [alertWarring addAction:actionOk];
-       
-       UIAlertAction *actionCancel = [UIAlertAction actionWithTitle:@"NO"
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:nil];
-       [alertWarring addAction:actionCancel];
-       
-       [self presentViewController:alertWarring animated:YES completion:nil];
-   }
-}
-
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-    [super setEditing:editing animated:animated];
-    [self.contactTableView setEditing:editing animated:animated];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+- (void)didSelectContact:(ContactModel *)contact {
     EditingContactModel *editcontactModel = [EditingContactModel new];
     editcontactModel.action = ViewDetailContact;
-    editcontactModel.contactModel = [self.viewModel getModel:indexPath.section :indexPath.row];
-    editcontactModel.indexPath = indexPath;
+    editcontactModel.contactModel = contact;
+    editcontactModel.oldSection = [contact getSection];
     
     NewContactViewController *addContactVC = [self.storyboard instantiateViewControllerWithIdentifier:@"NewContactViewController"];
     addContactVC.editContactModel = editcontactModel;
     addContactVC.isHavePermission = self.permisionDeniedSV.hidden;
+    addContactVC.isHavePermission = YES;
     
     [self.navigationController pushViewController:addContactVC animated:YES];
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 //UISearchbar delegate
@@ -181,37 +141,28 @@
     [self.viewModel searchWithString:searchText];
 }
 
-
-//observer contact home view model
--(void) loadDataComplete {
+//observer viewmodel
+- (void)loadDataComplete {
     [self.contactTableView reloadData];
-    self.isContactLoaded = YES;
+    self.isContactsLoaded = YES;
+    NSLog(@"complete");
+}
+
+- (void)deleteContactFail {
+    
+}
+
+- (void)deleteContactSuccess:(NSIndexPath *)indexPath removeSection:(BOOL)isRemoveSection {
+    //dont need to to
 }
 
 - (void)showPermisionDenied {
+    self.addNewContactButton.enabled = NO;
     [self.permisionDeniedSV setHidden:NO];
     [self.contactTableView setHidden:YES];
 }
 
 - (void)showFailToLoadContact {
-    [self showAlertActionOkWith:@"Error" message:@"Can't load contact, unknow error."];
+    
 }
-
-- (void)deleteContactSuccess:(NSIndexPath *)indexPath removeSection:(BOOL)isRemoveSection {
-    if(isRemoveSection) {
-        [self.contactTableView beginUpdates];
-        [self.contactTableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationLeft];
-        [self.contactTableView endUpdates];
-    } else {
-       [self.contactTableView beginUpdates];
-       [self.contactTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-       [self.contactTableView endUpdates];
-   }
-}
-
-- (void)deleteContactFail {
-    [self showAlertActionOkWith:@"Error" message:@"Can't delete contact, try later."];
-}
-
 @end
-

@@ -25,7 +25,7 @@
         _middleName = [contactModel middleName];
         _familyName = [contactModel familyName];
         _fullName   = [contactModel fullName];
-        _avatarName = [self generateAvatarName:_givenName :_familyName];
+        _avatarName = [ContactModel generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
         if([[contactModel phoneNumberArray] count]>0) {
@@ -55,7 +55,7 @@
         _fullName   = [NSString stringWithFormat:@"%@ %@ %@",_givenName,_middleName,_familyName];
         
         
-        _avatarName = [self generateAvatarName:_givenName :_familyName];
+        _avatarName = [ContactModel generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
         if([[contactModel phoneNumberArray] count]>0) {
@@ -74,7 +74,20 @@
     return self;
 }
 
-- (NSString *)generateAvatarName: (NSString *) firstName :(NSString*) lastName {
+- (NSString *)getSection {
+    NSString *sectionName;
+    if([self.avatarName length] == 1)
+        sectionName = self.avatarName;
+    else
+        sectionName = [self.avatarName substringWithRange:NSMakeRange(1, 1)];
+    return sectionName;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@", self.fullName];
+}
+
++ (NSString *)generateAvatarName: (NSString *) firstName :(NSString*) lastName {
     NSString *first = (firstName == nil)? @"" : firstName;
     NSString *last  = (lastName == nil)? @"" : lastName;
     
@@ -88,10 +101,6 @@
         return [[NSString alloc] initWithFormat:@"%c",[last characterAtIndex:0]];
     
     return @"*";
-}
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"%@", self.fullName];
 }
 
 @end

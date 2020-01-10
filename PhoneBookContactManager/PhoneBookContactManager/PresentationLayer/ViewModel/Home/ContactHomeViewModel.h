@@ -11,6 +11,7 @@
 #import "BContactStore.h"
 #import "ContactModel.h"
 #import "EditingContactModel.h"
+#import "ContactTableView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,21 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)searchWithString:(NSString*) keyToSearch;
 
-- (NSString *)getTitleForHeaderInSection: (NSInteger) section;
-
-- (NSInteger)getNumberOfSection;
-
-- (NSInteger)getNumberOfRowInSection:(NSInteger) section;
-
-- (ContactModel*)getModel:(NSInteger) section :(NSInteger) row;
-
-- (void)removeCellAt:(NSInteger) section andRow:(NSInteger) row;
-
-- (void)removeSection:(NSInteger) section;
-
 - (void)addNewContact:(EditingContactModel*) editContactModel;
 
 - (void)editContact:(EditingContactModel*) editContactModel;
+
+- (NSMutableDictionary*)contactsDictionaryForTableView;
+
+- (void)removeContactModel:(ContactModel*) model withCallback:(contactTableCallback) callback;
 @end
 
 NS_ASSUME_NONNULL_END

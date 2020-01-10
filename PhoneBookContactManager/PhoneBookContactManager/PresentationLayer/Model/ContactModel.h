@@ -11,7 +11,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactModel : NSObject
+@protocol ContactModelProtocol <NSObject>
+
+@property NSString *identifier;
+@property NSString *avatarName;
+@property NSString *fullName;
+
+@end
+
+@interface ContactModel : NSObject <ContactModelProtocol>
 
 @property NSString *identifier;
 @property NSString *avatarName;
@@ -23,7 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBusinessContact: (BContactModel*) contactModel;
 - (instancetype)initWithContactModel: (ContactModel*) contactModel;
+- (NSString*)getSection;
 - (NSString*)description;
+
++ (NSString *)generateAvatarName: (NSString *) firstName :(NSString*) lastName;
 @end
 
 NS_ASSUME_NONNULL_END

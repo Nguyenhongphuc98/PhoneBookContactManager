@@ -20,6 +20,7 @@ typedef enum : NSUInteger {
 @property ContactAction action;
 @property NSIndexPath *indexPath;
 @property ContactModel* contactModel;
+@property NSString *oldSection;
 @end
 
 NS_ASSUME_NONNULL_END

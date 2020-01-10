@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^dictionaryContactCallback)(NSMutableDictionary * _Nullable dicContacts, NSMutableArray * _Nullable sections, NSError *_Nullable error);
+typedef void(^dictionaryContactCallback)(NSMutableDictionary * _Nullable dicContacts, NSError *_Nullable error);
 
 @interface BContactStore : NSObject
 
