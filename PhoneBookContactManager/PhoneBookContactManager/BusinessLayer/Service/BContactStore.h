@@ -17,17 +17,17 @@ typedef void(^dictionaryContactCallback)(NSMutableDictionary * _Nullable dicCont
 
 @interface BContactStore : NSObject
 
-- (void)checkAuthorizeStatus:(void(^) (BOOL granted, NSError *error)) callBack;
+- (void)checkAuthorizeStatus:(void(^) (BOOL granted, NSError *error))callBack;
 
 - (void)loadContactWithCallback:(dictionaryContactCallback) callback;
 
-- (void)loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback) callback;
+- (void)loadImageForIdentifier:(NSString *)identifier withCallback:(loadImageCallback)callback;
 
-- (void)deleteContactForIdentifier:(NSString *)identifier withCallback:(writeContactCallback) callback;
+- (void)deleteContactForIdentifier:(NSString *)identifier withCallback:(writeContactCallback)callback;
 
-- (void)addNewContact:(BContactModel*) contact :(NSData *) image withCallback:(writeContactCallback) callback;
+- (void)addNewContact:(BContactModel*) contact :(NSData *)image withCallback:(writeContactCallback)callback;
 
-- (void)updateContact:(BContactModel*) contact :(NSData *) image withCallback:(writeContactCallback) callback;
+- (void)updateContact:(BContactModel*) contact :(NSData *)image withCallback:(writeContactCallback)callback;
 @end
 
 NS_ASSUME_NONNULL_END

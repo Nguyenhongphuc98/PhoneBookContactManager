@@ -31,7 +31,7 @@
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
-    if(highlighted)
+    if (highlighted)
         self.backgroundColor = self.backgroundHightLightState;
     else
         self.backgroundColor = self.backgroundNormalState;

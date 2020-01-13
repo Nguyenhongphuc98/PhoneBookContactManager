@@ -25,9 +25,9 @@ typedef void(^contactTableCallback)(ContactTableCallbackInfor *_Nullable error);
 
 @optional
 //cho chép làm gì đó trước khi bắt đầu xoá: vd hỏi lại người dùng có muốn xoá...
-- (void)acceptDeleteTableCellAt:(NSIndexPath *) indexPath withCallback:(contactTableCallback) callback;
+- (void)acceptDeleteTableCellAt:(NSIndexPath *) indexPath withCallback:(contactTableCallback)callback;
 //bắt đầu xoá cell
-- (void)willRemoveContactFromContactTableView:(ContactModel*) contactModel withCallback:(contactTableCallback) callback;
+- (void)willRemoveContactFromContactTableView:(ContactModel*) contactModel withCallback:(contactTableCallback)callback;
 - (void)didSelectContact:(ContactModel*)contact;
 @end
 

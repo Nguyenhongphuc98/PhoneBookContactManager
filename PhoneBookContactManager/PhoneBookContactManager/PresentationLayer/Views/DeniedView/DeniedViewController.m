@@ -25,7 +25,7 @@
 }
 - (IBAction)openSettings:(id)sender {
     if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:)])
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
 }
 
 @end

@@ -14,10 +14,10 @@ typedef enum :NSUInteger {
     FAIL,
     ACCEPT,
     SUCCESS,
-} ContaactTableCallbackCode;
+} ContactTableCallbackCode;
 
 @interface ContactTableCallbackInfor : NSObject
-@property ContaactTableCallbackCode code;
+@property ContactTableCallbackCode code;
 @property NSString *message;
 @end
 

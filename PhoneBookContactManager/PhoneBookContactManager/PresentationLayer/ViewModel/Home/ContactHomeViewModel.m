@@ -45,15 +45,14 @@
 
 - (void)requestPermision {
     [self.contactStore checkAuthorizeStatus:^(BOOL granted, NSError * _Nonnull error) {
-        if(granted == NO){
+        if (granted == NO) {
             NSLog(@"dont have permisson");
             if([[self delegate] respondsToSelector:@selector(showPermisionDenied)]){
                     [self.delegate showPermisionDenied];
             }
             else
                 NSLog(@"unresponds to selector");
-        }
-        else
+        } else
             [self loadContactFromBussinessLayer];
     }];
 }
@@ -62,18 +61,15 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         [self.contactStore loadContactWithCallback:^(NSMutableDictionary * _Nullable dicContacts, NSError * _Nullable error) {
-            if(error) {
+            if (error) {
                 if([self.delegate respondsToSelector:@selector(showFailToLoadContact)])
                     [self.delegate showFailToLoadContact];
             } else {
                 //clear exists contact
                 [self.contactDictionary removeAllObjects];
-//                [self.sessitonArray removeAllObjects];
-                
                 self.contactDictionary = dicContacts;
-//                self.sessitonArray = sections;
                 
-                if([self.delegate respondsToSelector:@selector(loadDataComplete)])
+                if ([self.delegate respondsToSelector:@selector(loadDataComplete)])
                     dispatch_sync(dispatch_get_main_queue(), ^{
                         [self.delegate loadDataComplete];
                     });
@@ -86,7 +82,6 @@
     self.isNeedReload = NO;
 }
 
-//=========================================================
 - (NSMutableDictionary*)contactsDictionaryForTableView {
     if (self.isSearching)
         return self.contactsDictionaryInSerchMode;
@@ -94,7 +89,7 @@
     return self.contactDictionary;
 }
 
-- (void)removeContactModel:(ContactModel *)model withCallback:(contactTableCallback) callback {
+- (void)removeContactModel:(ContactModel *)model withCallback:(contactTableCallback)callback {
     
     //delete in dictionary
     //if searchmode -> delete in dictionary, else do nothing because deleted in tableview (ref)
@@ -103,7 +98,7 @@
         ContactTableCallbackInfor *info = [ContactTableCallbackInfor new];
 
         [self.contactStore deleteContactForIdentifier:model.identifier withCallback:^(NSError * _Nullable error, NSString *identifier) {
-            if(error) {
+            if (error) {
                 info.code = FAIL;
                 //show err on UI
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -142,7 +137,7 @@
 
 -(void)searchWithString:(NSString *)keyToSearch {
     dispatch_async(self.serialSearchQueue, ^{
-        if(keyToSearch.length == 0) {
+        if (keyToSearch.length == 0) {
             self.isSearching = NO;
             
             if(self.isNeedReload)
@@ -165,14 +160,14 @@
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if([self.delegate respondsToSelector:@selector(loadDataComplete)])
+            if ([self.delegate respondsToSelector:@selector(loadDataComplete)])
                 [self.delegate loadDataComplete];
         });
     });
 }
 
 - (void)addNewContact:(EditingContactModel *)editContactModel {
-    if(editContactModel == nil) {
+    if (editContactModel == nil) {
         NSAssert(editContactModel != nil, @"Param 'editContactModel' should be a nonnull value.");
         return;
     }
@@ -182,7 +177,7 @@
         NSString *sessionName = [model getSection];
         
         //add session
-        if([self.contactDictionary objectForKey:sessionName] == nil) {
+        if ([self.contactDictionary objectForKey:sessionName] == nil) {
             //add new session if not exists
             NSMutableArray * contactSessionArray = [[NSMutableArray alloc] init];
             [contactSessionArray addObject:model];
@@ -191,7 +186,7 @@
         } else
             [[self.contactDictionary objectForKey:sessionName] addObject:model];
         
-        if([self.delegate respondsToSelector:@selector(loadDataComplete)])
+        if ([self.delegate respondsToSelector:@selector(loadDataComplete)])
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [self.delegate loadDataComplete];
             });
@@ -202,7 +197,7 @@
 }
 
 - (void)editContact:(EditingContactModel *)editContactModel {
-    if(editContactModel == nil) {
+    if (editContactModel == nil) {
         NSAssert(editContactModel != nil, @"Param 'editContactModel' should be nonnull.");
         return;
     }
@@ -242,7 +237,7 @@
 }
 
 - (BOOL)isInValidSection:(NSInteger)section andRow:(NSInteger)row {
-    if(!self.isSearching) {
+    if (!self.isSearching) {
         NSInteger numOfSection = [[self.contactDictionary allKeys] count];
         if(section >= numOfSection) {
             NSAssert(section < numOfSection, @"Param 'section' out of bound. Section = %ld", section);

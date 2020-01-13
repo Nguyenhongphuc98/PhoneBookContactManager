@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *familyName;
 @property NSMutableArray *phoneNumberArray;
 
-- (instancetype)initWithCNContact:(CNContact*) cnContact;
+- (instancetype)initWithCNContact:(CNContact*)cnContact;
 - (NSString*)description;
 
 @end

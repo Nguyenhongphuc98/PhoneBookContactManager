@@ -18,11 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol CHViewModelObserver <NSObject>
 @required
 -(void) loadDataComplete;
-
--(void) deleteContactSuccess:(NSIndexPath*) indexPath removeSection:(BOOL) isRemoveSection;
--(void) deleteContactFail;
-
 -(void) showPermisionDenied;
+-(void) deleteContactFail;
 -(void) showFailToLoadContact;
 @end
 
@@ -35,15 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadContactFromBussinessLayer;
 
-- (void)searchWithString:(NSString*) keyToSearch;
+- (void)searchWithString:(NSString*)keyToSearch;
 
-- (void)addNewContact:(EditingContactModel*) editContactModel;
+- (void)addNewContact:(EditingContactModel*)editContactModel;
 
-- (void)editContact:(EditingContactModel*) editContactModel;
+- (void)editContact:(EditingContactModel*)editContactModel;
 
 - (NSMutableDictionary*)contactsDictionaryForTableView;
 
-- (void)removeContactModel:(ContactModel*) model withCallback:(contactTableCallback) callback;
+- (void)removeContactModel:(ContactModel*)model withCallback:(contactTableCallback)callback;
 @end
 
 NS_ASSUME_NONNULL_END

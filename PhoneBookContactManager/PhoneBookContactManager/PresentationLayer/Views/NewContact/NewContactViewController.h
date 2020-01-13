@@ -15,7 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface NewContactViewController : UIViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate,NewContactObserver>
-@property EditingContactModel * editContactModel;
+@property EditingContactModel *editContactModel;
 @property (nonatomic) BOOL isHavePermission;
 
 @end

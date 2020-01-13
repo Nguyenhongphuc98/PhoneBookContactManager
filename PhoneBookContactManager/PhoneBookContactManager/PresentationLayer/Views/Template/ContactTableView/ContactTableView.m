@@ -18,7 +18,7 @@
 
 - (instancetype)init {
     self = [super init];
-    if(self) {
+    if (self) {
         [self setUp];
     }
     return self;
@@ -26,7 +26,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
-    if(self) {
+    if (self) {
         [self setUp];
     }
     return self;
@@ -108,7 +108,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if(editingStyle == UITableViewCellEditingStyleDelete) {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
         if ([self.delegate respondsToSelector:@selector(acceptDeleteTableCellAt:withCallback:)]) {
             ([self.delegate acceptDeleteTableCellAt:indexPath withCallback:^(ContactTableCallbackInfor * _Nullable info) {
                 if(info.code == ACCEPT) {
@@ -121,7 +121,7 @@
     }
 }
 
-- (void) removeCellAtIndexPath:(NSIndexPath*) indexPath {
+- (void) removeCellAtIndexPath:(NSIndexPath*)indexPath {
     //remove datasource and ui
     //check session
     NSString *section = [self.sectionArray objectAtIndex:indexPath.section];
@@ -131,7 +131,6 @@
     if ([self.delegate respondsToSelector:@selector(willRemoveContactFromContactTableView:withCallback:)]) {
         [self.delegate willRemoveContactFromContactTableView:model withCallback:^(ContactTableCallbackInfor * _Nullable info) {
             if (info.code == SUCCESS) {
-                NSLog(@"success");
                 //delete in dataSource
                 BOOL isFound = NO;
                 NSArray *arr = [self.contactsDictionary allKeys];

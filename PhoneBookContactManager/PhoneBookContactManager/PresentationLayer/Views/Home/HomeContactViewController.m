@@ -92,9 +92,13 @@
 }
 
 - (void)acceptDeleteTableCellAt:(NSIndexPath *)indexPath withCallback:(nonnull contactTableCallback)callback {
-
+    if (callback == nil) {
+        NSAssert(callback != nil, @"Param 'callback' should be nonnull.");
+        return ;
+    }
+    
     UIAlertController *alertWarring = [UIAlertController alertControllerWithTitle:@"Delete contact"
-                                                                            message:@"Are you sure to delete this contact"
+                                                                            message:@"Are you sure to delete this contact?"
                                                                      preferredStyle:UIAlertControllerStyleAlert];
         
     UIAlertAction *actionOk = [UIAlertAction actionWithTitle:@"YES"
@@ -148,21 +152,29 @@
     NSLog(@"complete");
 }
 
-- (void)deleteContactFail {
-    
-}
-
-- (void)deleteContactSuccess:(NSIndexPath *)indexPath removeSection:(BOOL)isRemoveSection {
-    //dont need to to
-}
-
 - (void)showPermisionDenied {
     self.addNewContactButton.enabled = NO;
     [self.permisionDeniedSV setHidden:NO];
     [self.contactTableView setHidden:YES];
 }
 
+- (void)deleteContactFail {
+    [self showMessageWithActionOk:@"Delete fail" message:@"We can't delete this contact at this moment."];
+}
+
 - (void)showFailToLoadContact {
+    [self showMessageWithActionOk:@"Load fail" message:@"We can't load contacts at this moment."];
+}
+
+- (void)showMessageWithActionOk:(NSString*) title message:(NSString*) mes {
+    UIAlertController *alertWarring = [UIAlertController alertControllerWithTitle:title
+                                                                          message:mes
+                                                                   preferredStyle:UIAlertControllerStyleAlert];
     
+    UIAlertAction *actionOk = [UIAlertAction actionWithTitle:@"OK"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:nil];
+    [alertWarring addAction:actionOk];
+    [self presentViewController:alertWarring animated:YES completion:nil];
 }
 @end

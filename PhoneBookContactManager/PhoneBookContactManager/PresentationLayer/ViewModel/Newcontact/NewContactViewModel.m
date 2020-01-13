@@ -10,8 +10,8 @@
 
 @implementation NewContactViewModel
 
-- (void)addNewContact:(ContactModel *_Nonnull) model :(NSData*) imageData {
-    if(model == nil) {
+- (void)addNewContact:(ContactModel *_Nonnull)model :(NSData*)imageData {
+    if (model == nil) {
         NSAssert(model != nil, @"Param 'model' should be nonnull");
         return;
     }
@@ -21,7 +21,7 @@
         BContactModel *newContact = [self convertContactModelToBContactModel:model];
         
         [contactStore addNewContact:newContact :imageData withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
-            if(error) {
+            if (error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(onAddNewContactFail)])
                         [self.delegate onAddNewContactFail];
@@ -48,11 +48,11 @@
         
         //save to store cache
         UIImage *image = [[UIImage alloc] initWithData:imageData];
-        if(image)
+        if (image)
             [[CacheStore sharedInstance] setImage:image for:contactNeedUpdate.identifier];
         
         [contactStore updateContact:contactNeedUpdate :imageData withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
-            if(error) {
+            if (error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if([self.delegate respondsToSelector:@selector(onUpdateContactFail)])
                         [self.delegate onUpdateContactFail];
@@ -67,8 +67,8 @@
     });
 }
 
--(BContactModel*) convertContactModelToBContactModel:(ContactModel*) model {
-    if(model == nil) {
+-(BContactModel*) convertContactModelToBContactModel:(ContactModel*)model {
+    if (model == nil) {
         NSAssert(model != nil, @"Param 'model' should be nonnull");
         return nil;
     }

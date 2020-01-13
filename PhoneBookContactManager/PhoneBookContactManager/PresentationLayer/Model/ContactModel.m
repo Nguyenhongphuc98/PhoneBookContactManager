@@ -11,13 +11,13 @@
 @implementation ContactModel
 
 - (instancetype)initWithBusinessContact:(BContactModel *)contactModel {
-    if(contactModel == nil) {
+    if (contactModel == nil) {
         NSAssert(contactModel != nil, @"Param 'contactModel' should be nonnull");
         return nil;
     }
     
     self = [super init];
-    if(self) {
+    if (self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
         _identifier = [contactModel identifier];
@@ -28,7 +28,7 @@
         _avatarName = [ContactModel generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
-        if([[contactModel phoneNumberArray] count]>0) {
+        if ([[contactModel phoneNumberArray] count]>0) {
             for (NSString *number in [contactModel phoneNumberArray]) {
                 [_phoneNumberArray addObject:[number copy]];
             }
@@ -39,13 +39,13 @@
 }
 
 - (instancetype)initWithContactModel:(ContactModel *)contactModel {
-    if(contactModel == nil) {
+    if (contactModel == nil) {
         NSAssert(contactModel != nil, @"Param 'contactModel' should be nonnull");
         return nil;
     }
     
     self = [super init];
-    if(self) {
+    if (self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
         _identifier = [contactModel identifier];
@@ -58,8 +58,8 @@
         _avatarName = [ContactModel generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
-        if([[contactModel phoneNumberArray] count]>0) {
-            if([self.fullName isEqualToString:@"  "])
+        if ([[contactModel phoneNumberArray] count]>0) {
+            if ([self.fullName isEqualToString:@"  "])
                 self.fullName = [[contactModel phoneNumberArray] objectAtIndex:0];
             
             for (NSString *number in [contactModel phoneNumberArray]) {
@@ -67,7 +67,7 @@
             }
         }
         
-        if([self.fullName isEqualToString:@"  "])
+        if ([self.fullName isEqualToString:@"  "])
             self.fullName = @"No name";
     }
     
@@ -76,7 +76,7 @@
 
 - (NSString *)getSection {
     NSString *sectionName;
-    if([self.avatarName length] == 1)
+    if ([self.avatarName length] == 1)
         sectionName = self.avatarName;
     else
         sectionName = [self.avatarName substringWithRange:NSMakeRange(1, 1)];
@@ -87,17 +87,17 @@
     return [NSString stringWithFormat:@"%@", self.fullName];
 }
 
-+ (NSString *)generateAvatarName: (NSString *) firstName :(NSString*) lastName {
++ (NSString *)generateAvatarName: (NSString *)firstName :(NSString*)lastName {
     NSString *first = (firstName == nil)? @"" : firstName;
     NSString *last  = (lastName == nil)? @"" : lastName;
     
-    if(![first isEqualToString:@""] && ![last isEqualToString:@""])
+    if (![first isEqualToString:@""] && ![last isEqualToString:@""])
         return [[NSString alloc] initWithFormat:@"%c%c",[first characterAtIndex:0],[last characterAtIndex:0]];
     
-    if(![first isEqualToString:@""])
+    if (![first isEqualToString:@""])
         return [[NSString alloc] initWithFormat:@"%c",[first characterAtIndex:0]];
     
-    if(![last isEqualToString:@""])
+    if (![last isEqualToString:@""])
         return [[NSString alloc] initWithFormat:@"%c",[last characterAtIndex:0]];
     
     return @"*";

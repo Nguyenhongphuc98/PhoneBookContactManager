@@ -28,21 +28,21 @@ typedef void(^writeContactCallback)(NSError *_Nullable error,NSString *_Nullable
 
 - (instancetype) init;
 
-- (void)checkAuthorizeStatus:(void(^) (BOOL granted, NSError *error)) callback;
+- (void)checkAuthorizeStatus:(void(^) (BOOL granted, NSError *error))callback;
 
 //read method
-- (void)loadContactWithCallback: (loadContactCallback _Nonnull) callback onQueue:(dispatch_queue_t _Nullable) callbackQueue;
+- (void)loadContactWithCallback: (loadContactCallback _Nonnull)callback onQueue:(dispatch_queue_t _Nullable)callbackQueue;
 
-- (void)responseContactForCallback: (NSError * _Nullable) error contactDTOArray: (NSMutableArray * _Nullable) contacts;
+- (void)responseContactForCallback: (NSError * _Nullable)error contactDTOArray: (NSMutableArray * _Nullable)contacts;
 
-- (void)loadImageForIdentifier:(NSString*) identifier withCallback:(loadImageCallback _Nonnull) callback;
+- (void)loadImageForIdentifier:(NSString*)identifier withCallback:(loadImageCallback _Nonnull)callback;
 
 //write method
-- (void)deleteContactForIdentifier:(NSString*) identifier withCallback:(writeContactCallback) callback;
+- (void)deleteContactForIdentifier:(NSString*)identifier withCallback:(writeContactCallback)callback;
 
-- (void)addNewContact:(DContactDTO*) contact :(NSData *_Nullable) image withCallback:(writeContactCallback) callback;
+- (void)addNewContact:(DContactDTO*)contact :(NSData *_Nullable)image withCallback:(writeContactCallback)callback;
 
-- (void)updateContact:(DContactDTO*) contact :(NSData *_Nullable) image withCallback:(writeContactCallback) callback;
+- (void)updateContact:(DContactDTO*)contact :(NSData *_Nullable)image withCallback:(writeContactCallback)callback;
 
 @end
 

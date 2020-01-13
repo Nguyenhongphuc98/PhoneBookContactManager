@@ -16,8 +16,8 @@
         return nil;
     }
     
-    self=[super init];
-    if(self) {
+    self = [super init];
+    if (self) {
         _phoneNumberArray = [[NSMutableArray alloc] init];
         
         _identifier = [cnContact identifier];
@@ -25,7 +25,7 @@
         _middleName = [cnContact middleName];
         _familyName = [cnContact familyName];
         
-        if([[cnContact phoneNumbers] count]>0) {
+        if ([[cnContact phoneNumbers] count] > 0) {
             for (CNLabeledValue *cnLabel in [cnContact phoneNumbers]) {
                 NSString *phoneNumber = [cnLabel.value stringValue];
                 if([phoneNumber length]>0)

@@ -31,7 +31,7 @@
 }
 
 - (void)fillData:(ContactModel*)model {
-    if(model == nil) {
+    if (model == nil) {
         NSAssert(model != nil, @"Param 'model' should be nonnull");
         return;
     }
@@ -39,13 +39,13 @@
     //try to get data from cacheStore
     UIImage *__block cacheImage = [[CacheStore sharedInstance] getImagefor:model.identifier];
     
-    if(cacheImage) {
+    if (cacheImage) {
         self.contactAvatar.image = cacheImage;
     } else {
         //try to get from device
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [[[BContactStore alloc] init] loadImageForIdentifier:model.identifier withCallback:^(NSData * _Nullable image, NSError * _Nullable error) {
-                if(!error && image) {
+                if (!error && image) {
                     UIImage * imageFromDevice =[[UIImage alloc] initWithData:image];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         self.contactAvatar.image = imageFromDevice;

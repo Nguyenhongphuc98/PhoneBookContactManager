@@ -29,12 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *fullName;
 @property NSMutableArray *phoneNumberArray;
 
-- (instancetype)initWithBusinessContact: (BContactModel*) contactModel;
-- (instancetype)initWithContactModel: (ContactModel*) contactModel;
+- (instancetype)initWithBusinessContact: (BContactModel*)contactModel;
+- (instancetype)initWithContactModel: (ContactModel*)contactModel;
 - (NSString*)getSection;
 - (NSString*)description;
 
-+ (NSString *)generateAvatarName: (NSString *) firstName :(NSString*) lastName;
++ (NSString *)generateAvatarName: (NSString *)firstName :(NSString*)lastName;
 @end
 
 NS_ASSUME_NONNULL_END

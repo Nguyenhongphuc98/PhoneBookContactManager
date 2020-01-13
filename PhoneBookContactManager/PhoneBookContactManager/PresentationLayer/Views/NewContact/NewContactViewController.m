@@ -177,15 +177,15 @@
     NSString *workPhone =([self.textFieldWorkPhone.text isEqualToString:@""])?@"":self.textFieldWorkPhone.text;
     
     NSData *imageData = nil;
-    if(self.isAvatarChange)
+    if (self.isAvatarChange)
         imageData = UIImagePNGRepresentation( self.avatarImage.image);
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray *phoneArray =[NSMutableArray new];
-        if(![homePhone isEqualToString:@""])
+        if (![homePhone isEqualToString:@""])
             [phoneArray addObject:homePhone];
         
-        if(![workPhone isEqualToString:@""])
+        if (![workPhone isEqualToString:@""])
             [phoneArray addObject:workPhone];
         
         ContactModel *newContact = [ContactModel new];
@@ -212,7 +212,7 @@
 }
 
 - (void)editContactToDevice {
-    if(!self.isHavePermission) {
+    if (!self.isHavePermission) {
         DeniedViewController *viewDenied = [self.storyboard instantiateViewControllerWithIdentifier:@"DeniedViewController"];
         [self.navigationController presentViewController:viewDenied animated:YES completion:nil];
         return;
@@ -224,15 +224,15 @@
     NSString *workPhone =([self.textFieldWorkPhone.text isEqualToString:@""])?@"":self.textFieldWorkPhone.text;
     
     NSData *imageData = nil;
-    if(self.isAvatarChange)
+    if (self.isAvatarChange)
         imageData = UIImagePNGRepresentation( self.avatarImage.image);
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray *phoneArray =[NSMutableArray new];
-        if(![homePhone isEqualToString:@""])
+        if (![homePhone isEqualToString:@""])
             [phoneArray addObject:homePhone];
         
-        if(![workPhone isEqualToString:@""])
+        if (![workPhone isEqualToString:@""])
             [phoneArray addObject:workPhone];
         
         //ContactModel *newContact = [ContactModel new];
@@ -248,7 +248,7 @@
         
         newContact.avatarName = [ContactModel generateAvatarName:newContact.givenName :newContact.familyName];
         newContact.avatarName = [newContact.avatarName uppercaseString];
-        if([newContact.fullName isEqualToString:@"  "])
+        if ([newContact.fullName isEqualToString:@"  "])
             newContact.fullName = @"No name";
         
         //self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
@@ -257,7 +257,7 @@
 }
 
 - (void)resetSaveButton {
-    if([self.tfFirstName.text length] == 0 && [self.tfMiddleName.text length] == 0 &&[self.tfLastName.text length] == 0 && self.isAvatarChange == NO && self.countClickAddPhone == 0)
+    if ([self.tfFirstName.text length] == 0 && [self.tfMiddleName.text length] == 0 &&[self.tfLastName.text length] == 0 && self.isAvatarChange == NO && self.countClickAddPhone == 0)
         [self.saveButton setEnabled:NO];
     else
         [self.saveButton setEnabled:YES];
@@ -269,7 +269,7 @@
     
     UIImage* originalImage = nil;
     originalImage = [info objectForKey:UIImagePickerControllerEditedImage];
-    if(originalImage == nil) {
+    if (originalImage == nil) {
         originalImage = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
     
@@ -285,7 +285,7 @@
 
 
 //observer for viewmodel
-- (void)onAddNewContactSuccess:(NSString*) identifier {
+- (void)onAddNewContactSuccess:(NSString*)identifier {
     self.editContactModel.contactModel.identifier = identifier;
     [self notifyModelChangeToHomeController];
 }
