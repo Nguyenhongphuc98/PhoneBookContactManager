@@ -36,6 +36,8 @@ typedef void(^contactTableCallback)(ContactTableCallbackInfor *_Nullable error);
 @property (nonatomic, weak) id<ContactTableViewDatasource> datasource;
 @property (nonatomic, weak) id<contactTableViewDelegate> delegate;
 
+@property (nonatomic) NSInteger rowHeight;
+
 - (void)reloadData;
 
 @end

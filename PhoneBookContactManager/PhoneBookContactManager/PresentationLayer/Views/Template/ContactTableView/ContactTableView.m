@@ -12,6 +12,7 @@
 @property (nonatomic, weak) UITableView *tableview;
 @property (nonatomic) NSMutableDictionary *contactsDictionary;
 @property (nonatomic) NSMutableArray *sectionArray;
+
 @end
 
 @implementation ContactTableView
@@ -62,6 +63,13 @@
     
     UINib *nib = [UINib nibWithNibName:@"ContactTableViewCell" bundle:nil];
     [self.tableview registerNib:nib forCellReuseIdentifier:@"ContactTableViewCell"];
+}
+
+- (void)setRowHeight:(NSInteger)rowHeight {
+    if (self.rowHeight != rowHeight) {
+        self.tableview.rowHeight = rowHeight;
+       // [self.tableview layoutIfNeeded];
+    }
 }
 
 - (void)reloadData {

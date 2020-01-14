@@ -28,7 +28,7 @@
         _avatarName = [ContactModel generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
-        if ([[contactModel phoneNumberArray] count]>0) {
+        if ([[contactModel phoneNumberArray] count] > 0) {
             for (NSString *number in [contactModel phoneNumberArray]) {
                 [_phoneNumberArray addObject:[number copy]];
             }
@@ -58,7 +58,7 @@
         _avatarName = [ContactModel generateAvatarName:_givenName :_familyName];
         _avatarName = [_avatarName uppercaseString];
         
-        if ([[contactModel phoneNumberArray] count]>0) {
+        if ([[contactModel phoneNumberArray] count] > 0) {
             if ([self.fullName isEqualToString:@"  "])
                 self.fullName = [[contactModel phoneNumberArray] objectAtIndex:0];
             

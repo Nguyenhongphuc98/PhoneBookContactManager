@@ -46,6 +46,7 @@
     
     self.contactTableView.datasource = self;
     self.contactTableView.delegate = self;
+    [self.contactTableView setRowHeight:60];
 }
 
 - (void) requestAccessContactInDevice {

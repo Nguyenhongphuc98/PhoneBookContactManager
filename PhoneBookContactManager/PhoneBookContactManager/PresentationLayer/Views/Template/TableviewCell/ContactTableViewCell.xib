@@ -37,9 +37,8 @@
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="7wH-oc-F6Y" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="FNa-co-wQD"/>
+                    <constraint firstItem="7wH-oc-F6Y" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="bpe-R1-2Tc"/>
                     <constraint firstItem="7wH-oc-F6Y" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="et7-6w-1Av"/>
-                    <constraint firstAttribute="bottom" secondItem="7wH-oc-F6Y" secondAttribute="bottom" priority="999" constant="5" id="pHj-8J-a5T"/>
                     <constraint firstItem="FJv-2D-YrW" firstAttribute="centerY" secondItem="7wH-oc-F6Y" secondAttribute="centerY" id="sZN-Sz-x0p"/>
                     <constraint firstItem="FJv-2D-YrW" firstAttribute="leading" secondItem="7wH-oc-F6Y" secondAttribute="trailing" constant="10" id="uvn-0c-drx"/>
                 </constraints>
