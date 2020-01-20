@@ -11,10 +11,13 @@
 #import "EditingContactModel.h"
 #import "CacheStore.h"
 #import "DeniedViewController.h"
+#import "PhoneTableView.h"
+#import "PhoneModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NewContactViewController : UIViewController <UIImagePickerControllerDelegate,UINavigationControllerDelegate,NewContactObserver>
+@interface NewContactViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, PhoneTableViewDatasource, NewContactObserver>
+
 @property EditingContactModel *editContactModel;
 @property (nonatomic) BOOL isHavePermission;
 

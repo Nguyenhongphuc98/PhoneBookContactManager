@@ -41,6 +41,8 @@
 - (void)setUp {
     self.isContactsLoaded = NO;
     [self.permisionDeniedSV setHidden:YES];
+    [self.navigationController.navigationBar setValue:@(YES) forKeyPath:@"hidesShadow"];
+    
     self.viewModel = [ContactHomeViewModel new];
     self.viewModel.delegate = self;
     

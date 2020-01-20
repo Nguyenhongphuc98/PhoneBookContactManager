@@ -17,12 +17,20 @@
 		A934962923A9C7650072B4BF /* PhoneBookContactManagerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A934962823A9C7650072B4BF /* PhoneBookContactManagerUITests.m */; };
 		A934963D23A9C8BF0072B4BF /* DContactStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A934963C23A9C8BF0072B4BF /* DContactStore.m */; };
 		A934964023A9C9BB0072B4BF /* DContactDTO.m in Sources */ = {isa = PBXBuildFile; fileRef = A934963F23A9C9BB0072B4BF /* DContactDTO.m */; };
+		A934B67023D5512100B7FAE5 /* PhoneTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = A934B66F23D5512100B7FAE5 /* PhoneTableView.m */; };
+		A934B67523D55E4D00B7FAE5 /* PhoneTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A934B67323D55E4D00B7FAE5 /* PhoneTableViewCell.m */; };
+		A934B67623D55E4D00B7FAE5 /* PhoneTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A934B67423D55E4D00B7FAE5 /* PhoneTableViewCell.xib */; };
+		A934B67923D5691900B7FAE5 /* PhoneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A934B67823D5691900B7FAE5 /* PhoneModel.m */; };
+		A934B67D23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A934B67B23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.m */; };
+		A934B67E23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A934B67C23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.xib */; };
+		A934B68123D5C80300B7FAE5 /* NSLayoutConstraint+Description.m in Sources */ = {isa = PBXBuildFile; fileRef = A934B68023D5C80300B7FAE5 /* NSLayoutConstraint+Description.m */; };
 		A939BFB023B3501C0019AC97 /* NewContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A939BFAF23B3501C0019AC97 /* NewContactViewController.m */; };
 		A939BFB523B3885D0019AC97 /* NewContactViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A939BFB423B3885D0019AC97 /* NewContactViewModel.m */; };
 		A93A66E123B1B9D700F9D2B5 /* CacheStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A93A66E023B1B9D700F9D2B5 /* CacheStore.m */; };
 		A942C06C23C814CA00E8781B /* ContactTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = A942C06B23C814CA00E8781B /* ContactTableView.m */; };
 		A942C07023C82D4600E8781B /* HomeContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A942C06F23C82D4600E8781B /* HomeContactViewController.m */; };
 		A942C07323C8682700E8781B /* ContactTableCallbackInfor.m in Sources */ = {isa = PBXBuildFile; fileRef = A942C07223C8682700E8781B /* ContactTableCallbackInfor.m */; };
+		A954467323D155F400F8D35C /* UIColor+Gradient.m in Sources */ = {isa = PBXBuildFile; fileRef = A954467223D155F400F8D35C /* UIColor+Gradient.m */; };
 		A95D4A6D23B9A29200EF2717 /* EditingContactModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A95D4A6C23B9A29200EF2717 /* EditingContactModel.m */; };
 		A9684E5723B05BD900539541 /* ContactTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A9684E5523B05BD900539541 /* ContactTableViewCell.m */; };
 		A9684E5823B05BD900539541 /* ContactTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9684E5623B05BD900539541 /* ContactTableViewCell.xib */; };
@@ -72,6 +80,18 @@
 		A934963C23A9C8BF0072B4BF /* DContactStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DContactStore.m; sourceTree = "<group>"; };
 		A934963E23A9C9BB0072B4BF /* DContactDTO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DContactDTO.h; sourceTree = "<group>"; };
 		A934963F23A9C9BB0072B4BF /* DContactDTO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DContactDTO.m; sourceTree = "<group>"; };
+		A934B66E23D5512100B7FAE5 /* PhoneTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhoneTableView.h; sourceTree = "<group>"; };
+		A934B66F23D5512100B7FAE5 /* PhoneTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhoneTableView.m; sourceTree = "<group>"; };
+		A934B67223D55E4D00B7FAE5 /* PhoneTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhoneTableViewCell.h; sourceTree = "<group>"; };
+		A934B67323D55E4D00B7FAE5 /* PhoneTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhoneTableViewCell.m; sourceTree = "<group>"; };
+		A934B67423D55E4D00B7FAE5 /* PhoneTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneTableViewCell.xib; sourceTree = "<group>"; };
+		A934B67723D5691900B7FAE5 /* PhoneModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhoneModel.h; sourceTree = "<group>"; };
+		A934B67823D5691900B7FAE5 /* PhoneModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhoneModel.m; sourceTree = "<group>"; };
+		A934B67A23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhoneAcitonTableViewCell.h; sourceTree = "<group>"; };
+		A934B67B23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhoneAcitonTableViewCell.m; sourceTree = "<group>"; };
+		A934B67C23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhoneAcitonTableViewCell.xib; sourceTree = "<group>"; };
+		A934B67F23D5C80300B7FAE5 /* NSLayoutConstraint+Description.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Description.h"; sourceTree = "<group>"; };
+		A934B68023D5C80300B7FAE5 /* NSLayoutConstraint+Description.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Description.m"; sourceTree = "<group>"; };
 		A939BFAE23B3501C0019AC97 /* NewContactViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewContactViewController.h; sourceTree = "<group>"; };
 		A939BFAF23B3501C0019AC97 /* NewContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NewContactViewController.m; sourceTree = "<group>"; };
 		A939BFB323B3885D0019AC97 /* NewContactViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewContactViewModel.h; sourceTree = "<group>"; };
@@ -84,6 +104,8 @@
 		A942C06F23C82D4600E8781B /* HomeContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HomeContactViewController.m; sourceTree = "<group>"; };
 		A942C07123C8682700E8781B /* ContactTableCallbackInfor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactTableCallbackInfor.h; sourceTree = "<group>"; };
 		A942C07223C8682700E8781B /* ContactTableCallbackInfor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTableCallbackInfor.m; sourceTree = "<group>"; };
+		A954467123D155F400F8D35C /* UIColor+Gradient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+Gradient.h"; sourceTree = "<group>"; };
+		A954467223D155F400F8D35C /* UIColor+Gradient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Gradient.m"; sourceTree = "<group>"; };
 		A95D4A6B23B9A29200EF2717 /* EditingContactModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditingContactModel.h; sourceTree = "<group>"; };
 		A95D4A6C23B9A29200EF2717 /* EditingContactModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditingContactModel.m; sourceTree = "<group>"; };
 		A9684E5423B05BD900539541 /* ContactTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
@@ -260,8 +282,32 @@
 				A9684E6D23B0CFBD00539541 /* ContactModel.m */,
 				A95D4A6B23B9A29200EF2717 /* EditingContactModel.h */,
 				A95D4A6C23B9A29200EF2717 /* EditingContactModel.m */,
+				A934B67723D5691900B7FAE5 /* PhoneModel.h */,
+				A934B67823D5691900B7FAE5 /* PhoneModel.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		A934B66D23D550F300B7FAE5 /* PhoneTableView */ = {
+			isa = PBXGroup;
+			children = (
+				A934B66E23D5512100B7FAE5 /* PhoneTableView.h */,
+				A934B66F23D5512100B7FAE5 /* PhoneTableView.m */,
+			);
+			path = PhoneTableView;
+			sourceTree = "<group>";
+		};
+		A934B67123D55E0700B7FAE5 /* PhoneTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				A934B67223D55E4D00B7FAE5 /* PhoneTableViewCell.h */,
+				A934B67323D55E4D00B7FAE5 /* PhoneTableViewCell.m */,
+				A934B67423D55E4D00B7FAE5 /* PhoneTableViewCell.xib */,
+				A934B67A23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.h */,
+				A934B67B23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.m */,
+				A934B67C23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.xib */,
+			);
+			path = PhoneTableViewCell;
 			sourceTree = "<group>";
 		};
 		A939BFAD23B34FF10019AC97 /* NewContact */ = {
@@ -298,6 +344,10 @@
 				A93A66E023B1B9D700F9D2B5 /* CacheStore.m */,
 				A942C07123C8682700E8781B /* ContactTableCallbackInfor.h */,
 				A942C07223C8682700E8781B /* ContactTableCallbackInfor.m */,
+				A954467123D155F400F8D35C /* UIColor+Gradient.h */,
+				A954467223D155F400F8D35C /* UIColor+Gradient.m */,
+				A934B67F23D5C80300B7FAE5 /* NSLayoutConstraint+Description.h */,
+				A934B68023D5C80300B7FAE5 /* NSLayoutConstraint+Description.m */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -341,9 +391,11 @@
 		A9684E5023B0599300539541 /* Template */ = {
 			isa = PBXGroup;
 			children = (
+				A934B67123D55E0700B7FAE5 /* PhoneTableViewCell */,
+				A934B66D23D550F300B7FAE5 /* PhoneTableView */,
 				A942C06923C8149300E8781B /* ContactTableView */,
 				A97BDE6F23C32FB3008C5BE7 /* Button */,
-				A97BDE6E23C32F9E008C5BE7 /* TableviewCell */,
+				A97BDE6E23C32F9E008C5BE7 /* ContactTableviewCell */,
 			);
 			path = Template;
 			sourceTree = "<group>";
@@ -357,14 +409,14 @@
 			path = DeniedView;
 			sourceTree = "<group>";
 		};
-		A97BDE6E23C32F9E008C5BE7 /* TableviewCell */ = {
+		A97BDE6E23C32F9E008C5BE7 /* ContactTableviewCell */ = {
 			isa = PBXGroup;
 			children = (
 				A9684E5423B05BD900539541 /* ContactTableViewCell.h */,
 				A9684E5523B05BD900539541 /* ContactTableViewCell.m */,
 				A9684E5623B05BD900539541 /* ContactTableViewCell.xib */,
 			);
-			path = TableviewCell;
+			path = ContactTableviewCell;
 			sourceTree = "<group>";
 		};
 		A97BDE6F23C32FB3008C5BE7 /* Button */ = {
@@ -481,7 +533,9 @@
 			files = (
 				A9684E5823B05BD900539541 /* ContactTableViewCell.xib in Resources */,
 				A934961123A9C7650072B4BF /* LaunchScreen.storyboard in Resources */,
+				A934B67623D55E4D00B7FAE5 /* PhoneTableViewCell.xib in Resources */,
 				A934960E23A9C7650072B4BF /* Assets.xcassets in Resources */,
+				A934B67E23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.xib in Resources */,
 				A934960923A9C7630072B4BF /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -510,15 +564,21 @@
 				A9684E5723B05BD900539541 /* ContactTableViewCell.m in Sources */,
 				A95D4A6D23B9A29200EF2717 /* EditingContactModel.m in Sources */,
 				A9684E6823B0C17600539541 /* BContactStore.m in Sources */,
+				A954467323D155F400F8D35C /* UIColor+Gradient.m in Sources */,
+				A934B68123D5C80300B7FAE5 /* NSLayoutConstraint+Description.m in Sources */,
 				A942C07023C82D4600E8781B /* HomeContactViewController.m in Sources */,
 				A942C07323C8682700E8781B /* ContactTableCallbackInfor.m in Sources */,
 				A97BDE7223C32FC9008C5BE7 /* RoundButton.m in Sources */,
+				A934B67023D5512100B7FAE5 /* PhoneTableView.m in Sources */,
+				A934B67523D55E4D00B7FAE5 /* PhoneTableViewCell.m in Sources */,
 				A934963D23A9C8BF0072B4BF /* DContactStore.m in Sources */,
+				A934B67923D5691900B7FAE5 /* PhoneModel.m in Sources */,
 				A9684E6523B0B90500539541 /* ContactHomeViewModel.m in Sources */,
 				A934960C23A9C7630072B4BF /* PhoneBookContactManager.xcdatamodeld in Sources */,
 				A9684E6B23B0C41B00539541 /* BContactModel.m in Sources */,
 				A939BFB023B3501C0019AC97 /* NewContactViewController.m in Sources */,
 				A9684E6E23B0CFBD00539541 /* ContactModel.m in Sources */,
+				A934B67D23D59CCE00B7FAE5 /* PhoneAcitonTableViewCell.m in Sources */,
 				A97BDE6D23C32723008C5BE7 /* DeniedViewController.m in Sources */,
 				A939BFB523B3885D0019AC97 /* NewContactViewModel.m in Sources */,
 				A934961423A9C7650072B4BF /* main.m in Sources */,

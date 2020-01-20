@@ -7,30 +7,37 @@
 //
 
 #import "NewContactViewController.h"
+#import "PhoneTableView.h"
 
 @interface NewContactViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImage;
-@property (weak, nonatomic) IBOutlet UIButton *btnAddPhone;
-@property (weak, nonatomic) IBOutlet UITextField *textFieldHomePhone;
-@property (weak, nonatomic) IBOutlet UITextField *textFieldWorkPhone;
 @property (weak, nonatomic) IBOutlet UITextField *tfFirstName;
 @property (weak, nonatomic) IBOutlet UITextField *tfMiddleName;
 @property (weak, nonatomic) IBOutlet UITextField *tfLastName;
 @property (weak, nonatomic) IBOutlet UIButton *btnAddPhoto;
-@property (weak, nonatomic) IBOutlet UILabel *lbHome;
-@property (weak, nonatomic) IBOutlet UILabel *lbWork;
 @property (nonatomic) UIButton *saveButton;
+@property (weak, nonatomic) IBOutlet UIButton *addPhonebutton;
+@property (weak, nonatomic) IBOutlet UIStackView *addPhoneStackView;
+@property (weak, nonatomic) IBOutlet UIView *addPhoneLine;
+@property (weak, nonatomic) IBOutlet UIView *phoneView;
+
+@property (weak, nonatomic) IBOutlet PhoneTableView *phoneTableView;
+@property (nonatomic) NSMutableArray* phoneModelArray;
 
 @property UIImagePickerController *imagePicker;
 
-@property (nonatomic) NSInteger countClickAddPhone;
 @property (nonatomic) BOOL isAvatarChange;
 @property (nonatomic) NewContactViewModel *viewModel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *phoneTableViewContrains;
 
 @end
 
 @implementation NewContactViewController
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -40,7 +47,6 @@
 
 - (void)setUp {
     self.avatarImage.layer.cornerRadius = self.avatarImage.frame.size.width/2;
-    self.countClickAddPhone = 0;
     self.isAvatarChange = NO;
     
     self.imagePicker = [UIImagePickerController new];
@@ -49,16 +55,22 @@
     self.viewModel = [NewContactViewModel new];
     self.viewModel.delegate = self;
     
+    _phoneModelArray = [[NSMutableArray alloc] init];
+    _phoneTableView.dataSource = self;
+    _phoneTableView.phoneTableViewContrains = _phoneTableViewContrains;
+    
     self.saveButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 48, 30)];
     [self.saveButton setTitle:@"save" forState:UIControlStateNormal];
-    [self.saveButton setTitleColor:self.btnAddPhone.titleLabel.tintColor forState:UIControlStateNormal];
     [self.saveButton setTitleColor:UIColor.brownColor forState:UIControlStateHighlighted];
     [self.saveButton setTitleColor:UIColor.grayColor forState:UIControlStateDisabled];
+    [self.saveButton setTitleColor:_btnAddPhoto.titleLabel.textColor forState:UIControlStateNormal];
     [self.saveButton addTarget:self action:@selector(saveClick) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.saveButton];
     
     self.navigationItem.rightBarButtonItem = barButtonItem;
     [self.view addSubview:self.saveButton];
+    
+    [self.addPhonebutton setTitleColor:UIColor.greenColor forState:UIControlStateHighlighted];
 
     switch (self.editContactModel.action) {
         case AddNewContact:
@@ -72,15 +84,13 @@
         default:
             break;
     }
+    [_phoneTableView reloadData];
 }
 
 - (void)setUpAddNewContact {
     [self.saveButton setTitle:@"Save" forState:UIControlStateNormal];
     [self.saveButton setEnabled:NO];
-    self.textFieldHomePhone.hidden = YES;
-    self.textFieldWorkPhone.hidden = YES;
-    self.lbHome.hidden = YES;
-    self.lbWork.hidden = YES;
+    [_phoneTableView allowEditting:YES];
 }
 
 - (void)setUpViewDetail {
@@ -91,21 +101,20 @@
         self.tfMiddleName.userInteractionEnabled = NO;
         self.tfLastName.userInteractionEnabled = NO;
         self.btnAddPhoto.hidden = YES;
-        self.btnAddPhone.hidden = YES;
         
         self.tfFirstName.text = self.editContactModel.contactModel.givenName;
         self.tfMiddleName.text = self.editContactModel.contactModel.middleName;
         self.tfLastName.text = self.editContactModel.contactModel.familyName;
         
-        if(self.editContactModel.contactModel.phoneNumberArray.count ==2) {
-            self.textFieldWorkPhone.hidden = NO;
-            self.textFieldWorkPhone.text = self.editContactModel.contactModel.phoneNumberArray[1];
+        for (NSString* phoneNumber in _editContactModel.contactModel.phoneNumberArray) {
+            PhoneModel* phoneModel;
+            if ([_phoneModelArray count] == 0)
+                phoneModel = [[PhoneModel alloc] initWithType:@"Home" andPhone:phoneNumber];
+            else
+                phoneModel = [[PhoneModel alloc] initWithType:@"work" andPhone:phoneNumber];
+            [_phoneModelArray addObject:phoneModel];
         }
-        
-        if(self.editContactModel.contactModel.phoneNumberArray.count >0) {
-            self.textFieldHomePhone.hidden = NO;
-            self.textFieldHomePhone.text = self.editContactModel.contactModel.phoneNumberArray[0];
-        }
+        [_phoneTableView reloadData];
         
         self.avatarImage.image = [[CacheStore sharedInstance] getImagefor:self.editContactModel.contactModel.identifier];
     }
@@ -121,24 +130,16 @@
     [self resetSaveButton];
 }
 
-- (IBAction)addPhoneClick:(id)sender {
-    NSLog(@"click");
-    self.countClickAddPhone ++;
-    if(self.countClickAddPhone>2)
-        return;
+- (IBAction)onAddPhone:(id)sender {
+    //add to phone array
+    PhoneModel* phone;
+    if ([_phoneModelArray count] == 0)
+        phone = [[PhoneModel alloc] initWithType:@"Home" andPhone:@""];
+    else
+        phone = [[PhoneModel alloc] initWithType:@"Work" andPhone:@""];
 
-    if(self.countClickAddPhone == 1) {
-        [UIView animateWithDuration:2 animations:^{
-            self.textFieldHomePhone.hidden = NO;
-            self.lbHome.hidden = NO;
-        }];
-        [self resetSaveButton];
-    } else {
-        [UIView animateWithDuration:2 animations:^{
-            self.textFieldWorkPhone.hidden = NO;
-            self.lbWork.hidden = NO;
-        }];
-    }
+    [_phoneModelArray addObject:phone];
+    [_phoneTableView reloadData];
 }
 
 - (IBAction)changePhoto:(id)sender {
@@ -173,8 +174,14 @@
     NSString *firstName =([self.tfFirstName.text isEqualToString:@""])?@"":self.tfFirstName.text;
     NSString *secondName =([self.tfMiddleName.text isEqualToString:@""])?@"":self.tfMiddleName.text;
     NSString *lastName =([self.tfLastName.text isEqualToString:@""])?@"":self.tfLastName.text;
-    NSString *homePhone =([self.textFieldHomePhone.text isEqualToString:@""])?@"":self.textFieldHomePhone.text;
-    NSString *workPhone =([self.textFieldWorkPhone.text isEqualToString:@""])?@"":self.textFieldWorkPhone.text;
+    NSString *workPhone = @"";
+    NSString *homePhone = @"";
+    if ([self.phoneModelArray count] > 1) {
+        workPhone =([[self.phoneModelArray[1] phoneNumber] isEqualToString:@""])? @"": [self.phoneModelArray[1] phoneNumber];
+    }
+    if ([self.phoneModelArray count] > 0) {
+        homePhone = ([[self.phoneModelArray[0] phoneNumber] isEqualToString:@""])? @"": [self.phoneModelArray[0] phoneNumber];
+    }
     
     NSData *imageData = nil;
     if (self.isAvatarChange)
@@ -184,7 +191,7 @@
         NSMutableArray *phoneArray =[NSMutableArray new];
         if (![homePhone isEqualToString:@""])
             [phoneArray addObject:homePhone];
-        
+
         if (![workPhone isEqualToString:@""])
             [phoneArray addObject:workPhone];
         
@@ -203,12 +210,12 @@
     self.editContactModel.action = EditContact;
     [self.saveButton setTitle:@"Save" forState:UIControlStateNormal];
     
+    [_phoneTableView allowEditting:YES];
     self.tfFirstName.userInteractionEnabled = YES;
     self.tfMiddleName.userInteractionEnabled = YES;
     self.tfLastName.userInteractionEnabled = YES;
     self.btnAddPhoto.hidden = NO;
     [self.btnAddPhoto setTitle:@"Edit" forState:UIControlStateNormal];
-    self.btnAddPhone.hidden = NO;
 }
 
 - (void)editContactToDevice {
@@ -220,8 +227,14 @@
     NSString *firstName =([self.tfFirstName.text isEqualToString:@""])?@"":self.tfFirstName.text;
     NSString *secondName =([self.tfMiddleName.text isEqualToString:@""])?@"":self.tfMiddleName.text;
     NSString *lastName =([self.tfLastName.text isEqualToString:@""])?@"":self.tfLastName.text;
-    NSString *homePhone =([self.textFieldHomePhone.text isEqualToString:@""])?@"":self.textFieldHomePhone.text;
-    NSString *workPhone =([self.textFieldWorkPhone.text isEqualToString:@""])?@"":self.textFieldWorkPhone.text;
+    NSString *workPhone = @"";
+    NSString *homePhone = @"";
+    if ([self.phoneModelArray count] > 1) {
+        workPhone =([[self.phoneModelArray[1] phoneNumber] isEqualToString:@""])? @"": [self.phoneModelArray[1] phoneNumber];
+    }
+    if ([self.phoneModelArray count] > 0) {
+        homePhone = ([[self.phoneModelArray[0] phoneNumber] isEqualToString:@""])? @"": [self.phoneModelArray[0] phoneNumber];
+    }
     
     NSData *imageData = nil;
     if (self.isAvatarChange)
@@ -231,13 +244,11 @@
         NSMutableArray *phoneArray =[NSMutableArray new];
         if (![homePhone isEqualToString:@""])
             [phoneArray addObject:homePhone];
-        
+
         if (![workPhone isEqualToString:@""])
             [phoneArray addObject:workPhone];
         
-        //ContactModel *newContact = [ContactModel new];
         ContactModel *newContact = self.editContactModel.contactModel;
-        //newContact.identifier = self.editContactModel.contactModel.identifier;
         newContact.givenName = firstName;
         newContact.middleName = secondName;
         newContact.familyName = lastName;
@@ -251,13 +262,12 @@
         if ([newContact.fullName isEqualToString:@"  "])
             newContact.fullName = @"No name";
         
-        //self.editContactModel.contactModel = [[ContactModel alloc] initWithContactModel:newContact];
         [self.viewModel updateContact:self.editContactModel.contactModel :imageData];
     });
 }
 
 - (void)resetSaveButton {
-    if ([self.tfFirstName.text length] == 0 && [self.tfMiddleName.text length] == 0 &&[self.tfLastName.text length] == 0 && self.isAvatarChange == NO && self.countClickAddPhone == 0)
+    if ([self.tfFirstName.text length] == 0 && [self.tfMiddleName.text length] == 0 && [self.tfLastName.text length] == 0 && self.isAvatarChange == NO)
         [self.saveButton setEnabled:NO];
     else
         [self.saveButton setEnabled:YES];
@@ -283,6 +293,11 @@
     self.isAvatarChange = NO;
 }
 
+//phone tableview datasource
+- (NSMutableArray *)phoneModelForPhoneTableView:(PhoneTableView *)tableView {
+    _phoneTableViewContrains.constant = ([_phoneModelArray count] + 1) * 40.0;
+    return _phoneModelArray;
+}
 
 //observer for viewmodel
 - (void)onAddNewContactSuccess:(NSString*)identifier {

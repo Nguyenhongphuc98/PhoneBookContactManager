@@ -20,14 +20,14 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7wH-oc-F6Y">
-                        <rect key="frame" x="20" y="5" width="50" height="50"/>
+                        <rect key="frame" x="20" y="7.5" width="45" height="45"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="50" id="0M3-EZ-g8K"/>
-                            <constraint firstAttribute="width" constant="50" id="mMz-4m-6Z9"/>
+                            <constraint firstAttribute="width" secondItem="7wH-oc-F6Y" secondAttribute="height" multiplier="1:1" id="9FC-gj-kMd"/>
+                            <constraint firstAttribute="width" constant="45" id="mMz-4m-6Z9"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="248" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text=" Display name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FJv-2D-YrW">
-                        <rect key="frame" x="80" y="19.5" width="107" height="21"/>
+                        <rect key="frame" x="75" y="19.5" width="107" height="21"/>
                         <constraints>
                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="230" id="jME-Wy-CvM"/>
                         </constraints>

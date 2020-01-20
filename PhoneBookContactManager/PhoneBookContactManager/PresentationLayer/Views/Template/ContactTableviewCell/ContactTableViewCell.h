@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactTableViewCell : UITableViewCell
 
-- (void)fillData:(ContactModel *_Nonnull)model;
+- (void)fillData:(id <ContactModelProtocol> _Nonnull)model;
 @end
 
 NS_ASSUME_NONNULL_END

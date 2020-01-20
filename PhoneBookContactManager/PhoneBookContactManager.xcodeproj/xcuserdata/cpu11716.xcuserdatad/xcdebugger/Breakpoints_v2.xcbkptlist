@@ -313,11 +313,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PhoneBookContactManager/PresentationLayer/Views/Home/HomeContactViewController.m"
-            timestampString = "600595038.53641"
+            timestampString = "600951236.484786"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
             landmarkName = "-processNewContactViewControllerdismis:"
             landmarkType = "7">
          </BreakpointContent>
@@ -329,11 +329,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PhoneBookContactManager/PresentationLayer/Views/Home/HomeContactViewController.m"
-            timestampString = "600595038.536562"
+            timestampString = "600951236.484895"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
             landmarkName = "HomeContactViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -407,22 +407,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PhoneBookContactManager/PresentationLayer/Views/NewContact/NewContactViewController.m"
-            timestampString = "600582241.144654"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "289"
-            endingLineNumber = "289"
-            landmarkName = "-onAddNewContactSuccess:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "PhoneBookContactManager/DataAccessLayer/Respository/DContactStore.m"
             timestampString = "600582241.144765"
             startingColumnNumber = "9223372036854775807"
@@ -446,22 +430,6 @@
             startingLineNumber = "308"
             endingLineNumber = "308"
             landmarkName = "-updateContact::withCallback:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PhoneBookContactManager/PresentationLayer/Views/NewContact/NewContactViewController.m"
-            timestampString = "600582241.144968"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "251"
-            endingLineNumber = "251"
-            landmarkName = "-editContactToDevice"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -510,22 +478,6 @@
             startingLineNumber = "315"
             endingLineNumber = "315"
             landmarkName = "-updateContact::withCallback:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PhoneBookContactManager/PresentationLayer/Views/NewContact/NewContactViewController.m"
-            timestampString = "600582241.145358"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "110"
-            endingLineNumber = "110"
-            landmarkName = "-setUpViewDetail"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -765,6 +717,22 @@
             startingLineNumber = "133"
             endingLineNumber = "133"
             landmarkName = "-removeContactModel:withCallback:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PhoneBookContactManager/PresentationLayer/Views/NewContact/NewContactViewController.m"
+            timestampString = "601213142.007858"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "-setUpViewDetail"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -133,7 +133,7 @@
     //remove datasource and ui
     //check session
     NSString *section = [self.sectionArray objectAtIndex:indexPath.section];
-    ContactModel *model = [[self.contactsDictionary objectForKey:section] objectAtIndex:indexPath.row];
+    id<ContactModelProtocol> model = [[self.contactsDictionary objectForKey:section] objectAtIndex:indexPath.row];
     NSInteger numOfRows = [self tableView:self.tableview numberOfRowsInSection:indexPath.section];
     
     if ([self.delegate respondsToSelector:@selector(willRemoveContactFromContactTableView:withCallback:)]) {
@@ -144,7 +144,7 @@
                 NSArray *arr = [self.contactsDictionary allKeys];
                 for (NSString* section in arr) {
                     NSMutableArray *contacts = [self.contactsDictionary objectForKey:section];
-                    for (ContactModel *contact in contacts) {
+                    for (id<ContactModelProtocol> contact in contacts) {
                         if ([contact.identifier isEqualToString:model.identifier]) {
                             [[self.contactsDictionary objectForKey:section] removeObject:contact];
                             isFound = YES;

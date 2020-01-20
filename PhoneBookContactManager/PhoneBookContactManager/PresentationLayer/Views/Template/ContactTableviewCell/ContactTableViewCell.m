@@ -10,6 +10,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "CacheStore.h"
 #import "BContactStore.h"
+#import "UIColor+Gradient.h"
 
 @interface ContactTableViewCell()
 @property (weak, nonatomic) IBOutlet UIImageView *contactAvatar;
@@ -22,15 +23,20 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    self.contactAvatar.layer.cornerRadius = 25;
+    self.contactAvatar.layer.cornerRadius = self.contactAvatar.frame.size.width/2;
     self.separatorInset = UIEdgeInsetsMake(0, 80, 0, 0);
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.contactAvatar.layer.cornerRadius = self.contactAvatar.frame.size.width/2;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 }
 
-- (void)fillData:(ContactModel*)model {
+- (void)fillData:(id <ContactModelProtocol>)model {
     if (model == nil) {
         NSAssert(model != nil, @"Param 'model' should be nonnull");
         return;
@@ -75,20 +81,21 @@
     
     UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
     nameLabel.text = text;
-    int red = [text characterAtIndex:0];
-    int green = ([text length] == 2)? [text characterAtIndex:1] :red;
-    float r = ((red*2 + green *3)%255) /255.0;
-    float g = ((red*5 + green /2)%255) /255.0;
-    UIColor *background = [UIColor colorWithRed:r green:g blue:0.5 alpha:1.0];
-    nameLabel.backgroundColor = background;
-    nameLabel.textAlignment=NSTextAlignmentCenter;
+    nameLabel.textAlignment = NSTextAlignmentCenter;
+    nameLabel.textColor = [UIColor whiteColor];
+    nameLabel.backgroundColor = [UIColor clearColor];
     
-    UIGraphicsBeginImageContextWithOptions(nameLabel.bounds.size, nameLabel.opaque, 1.0);
-    [[nameLabel layer] renderInContext:UIGraphicsGetCurrentContext()];
+    //create a view contain name label
+    UIView *container = [[UIView alloc] initWithFrame:nameLabel.frame];
+    CAGradientLayer *gradient = [[UIColor new] generateRandomGradient:container];
+    [container.layer addSublayer:gradient];
+    [container addSubview:nameLabel];
+    
+    UIGraphicsBeginImageContextWithOptions(container.bounds.size, container.opaque, 1.0);
+    [[container layer] renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     return newImage;
 }
-
 @end
