@@ -25,6 +25,7 @@
 @property (nonatomic) NSMutableArray* phoneModelArray;
 
 @property UIImagePickerController *imagePicker;
+@property UIView *indicatorView;
 
 @property (nonatomic) BOOL isAvatarChange;
 @property (nonatomic) NewContactViewModel *viewModel;
@@ -85,6 +86,41 @@
             break;
     }
     [_phoneTableView reloadData];
+    
+    [self setUpIndicator];
+}
+
+- (void)setUpIndicator {
+    _indicatorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
+    _indicatorView.backgroundColor = UIColor.grayColor;
+    _indicatorView.layer.cornerRadius = 10;
+    
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
+    indicator.color = UIColor.whiteColor;
+    indicator.hidesWhenStopped = false;
+    
+    
+    UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 0, 140, 50)];
+    textLabel.text = @"Saving...";
+    
+    [_indicatorView addSubview:indicator];
+    [_indicatorView addSubview:textLabel];
+    _indicatorView.center = self.view.center;
+    [self.view addSubview:_indicatorView];
+    [self.view bringSubviewToFront:_indicatorView];
+    [indicator startAnimating];
+    [_indicatorView setHidden:YES];
+}
+
+- (void)showProcessingIndicator {
+    [_indicatorView setHidden:NO];
+    [self.view layoutIfNeeded];
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+}
+
+- (void)hideProcessingIndicator {
+    [_indicatorView setHidden:YES];
+    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
 }
 
 - (void)setUpAddNewContact {
@@ -166,6 +202,7 @@
 }
 
 - (void)saveNewContactToDevice {
+    [self showProcessingIndicator];
     if(!self.isHavePermission) {
         DeniedViewController *viewDenied = [self.storyboard instantiateViewControllerWithIdentifier:@"DeniedViewController"];
         [self.navigationController presentViewController:viewDenied animated:YES completion:nil];
@@ -219,6 +256,7 @@
 }
 
 - (void)editContactToDevice {
+    [self showProcessingIndicator];
     if (!self.isHavePermission) {
         DeniedViewController *viewDenied = [self.storyboard instantiateViewControllerWithIdentifier:@"DeniedViewController"];
         [self.navigationController presentViewController:viewDenied animated:YES completion:nil];
@@ -286,6 +324,8 @@
     self.isAvatarChange = YES;
     [self resetSaveButton];
     self.avatarImage.image = originalImage;
+    
+    [[CacheStore sharedInstance] removeImageFor:_editContactModel.contactModel.identifier];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -301,19 +341,23 @@
 
 //observer for viewmodel
 - (void)onAddNewContactSuccess:(NSString*)identifier {
+    [self hideProcessingIndicator];
     self.editContactModel.contactModel.identifier = identifier;
     [self notifyModelChangeToHomeController];
 }
 
 - (void)onAddNewContactFail {
+    [self hideProcessingIndicator];
     [self showOKMessageWithTitle:@"Fail to save" andMess:@"try later"];
 }
 
 - (void)onUpdateContactSuccess:(NSString *)identifier {
+    [self hideProcessingIndicator];
     [self notifyModelChangeToHomeController];
 }
 
 - (void)onUpdateContactFail {
+    [self hideProcessingIndicator];
     [self showOKMessageWithTitle:@"Fail to update" andMess:@"try later"];
 }
 

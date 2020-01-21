@@ -47,9 +47,9 @@
         BContactModel *contactNeedUpdate = [self convertContactModelToBContactModel:model];
         
         //save to store cache
-        UIImage *image = [[UIImage alloc] initWithData:imageData];
-        if (image)
-            [[CacheStore sharedInstance] setImage:image for:contactNeedUpdate.identifier];
+        //UIImage *image = [[UIImage alloc] initWithData:imageData];
+        //        if (image)
+        //            [[CacheStore sharedInstance] setImage:image for:contactNeedUpdate.identifier];
         
         [contactStore updateContact:contactNeedUpdate :imageData withCallback:^(NSError * _Nullable error, NSString * _Nullable identifier) {
             if (error) {

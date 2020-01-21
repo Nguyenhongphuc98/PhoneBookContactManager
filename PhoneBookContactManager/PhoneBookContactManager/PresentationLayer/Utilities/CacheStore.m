@@ -42,4 +42,8 @@
     }
     [self.interalCache setObject:image forKey:identidier];
 }
+
+- (void)removeImageFor:(NSString *)identifier {
+    [self.interalCache removeObjectForKey:identifier];
+}
 @end

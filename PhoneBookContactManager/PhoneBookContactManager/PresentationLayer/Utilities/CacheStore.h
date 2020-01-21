@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) setImage:(UIImage *) image for:(NSString *) identidier;
 
+- (void) removeImageFor:(NSString *)identifier;
 @end
 
 NS_ASSUME_NONNULL_END
